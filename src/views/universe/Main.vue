@@ -96,6 +96,8 @@
     <v-content v-else>
       <router-view />
     </v-content>
+    
+    <app-footer />
   </v-app>
 </template>
 

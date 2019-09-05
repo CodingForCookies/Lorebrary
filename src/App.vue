@@ -8,7 +8,9 @@
   </div>
 
   <!-- We could put the Main.vue things, here, but we defer loading it so it doesn't need to worry about startup procedure logic. -->
-  <router-view v-else></router-view>
+  <div v-else>
+    <router-view></router-view>
+  </div>
 </template>
 
 <script>

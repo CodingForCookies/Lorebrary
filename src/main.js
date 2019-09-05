@@ -13,6 +13,8 @@ import drivers from './driver/';
 
 Vue.prototype.$drivers = drivers;
 
+Vue.component('app-footer', require('./components/Footer.vue').default);
+
 /*Vue.mixin({
   computed: {
     $driver: {

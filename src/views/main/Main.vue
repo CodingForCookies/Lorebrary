@@ -82,8 +82,10 @@
     </v-app-bar>
 
     <v-content>
-      <router-view/>
+      <router-view />
     </v-content>
+      
+    <app-footer />
   </v-app>
 </template>
 

@@ -10,7 +10,7 @@
     </v-card-text>
     <v-layout row v-else>
       <v-flex xs12 md3>
-        <v-card dark flat tile outlined class="fill-height codex-list">
+        <v-card dark flat tile outlined color="blue-grey darken-4" class="fill-height codex-list">
           <v-layout row>
             <v-flex v-for="[icon, name] in [['city', 'Places'], ['user', 'Beings'], ['box', 'Things'], ['book', 'Codex']]" :key="icon">
               <v-btn text block tile :height="64">
@@ -516,8 +516,6 @@
 <style>
   .codex-list {
     color: #FFF !important;
-
-    background-color: #283439 !important;
   }
 
   .codex-list .v-tabs > .v-tabs-bar {
