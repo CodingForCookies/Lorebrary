@@ -4,7 +4,7 @@ import Router from 'vue-router'
 Vue.use(Router)
 
 export default new Router({
-  mode: 'history',
+  // mode: 'history', can't use this, as it's deployed in a sub directory on gh-pages, currently.
   base: process.env.BASE_URL,
   routes: [
     {
