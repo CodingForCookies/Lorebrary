@@ -115,8 +115,7 @@
           <div class="fill-height">
             <v-img
               v-if="article.image"
-              src="https://picsum.photos/id/11/100/60"
-              lazy-src="https://picsum.photos/id/11/100/60"
+              :src="articleImage ? (articleImage.src || articleImage.blob) : undefined"
               aspect-ratio="1"
               class="grey lighten-2"
                 @click="image.dialog = true">
@@ -209,10 +208,10 @@
       </v-btn>
     </v-snackbar>
     
-    <resource-editor
+    <image-editor
+      v-if="image.dialog"
       :visible.sync="image.dialog"
       v-model="article.image"
-      type="images"
       selection />
     
     <v-dialog
@@ -266,10 +265,10 @@
 
 <script>
   import Editor from '../../components/Editor.vue'
-  import ResourceEditor from '../../components/ResourceEditor.vue'
+  import ImageEditor from '../../components/ImageEditor.vue'
 
   export default {
-    components: { Editor, ResourceEditor },
+    components: { Editor, ImageEditor },
     data: () => ({
       search: {
         text: '',
@@ -349,6 +348,7 @@
         tags: [],
         content: []
       },
+      articleImage: null,
       articleParent: null,
 
       editing: false,
@@ -383,6 +383,9 @@
           if(this.ignoreChanges) return;
           this.unsaved = val.id == oldVal.id;
         }
+      },
+      async 'article.image'(val) {
+        this.articleImage = (val ? await this.$store.dispatch('getResource', val) : null);
       },
 
       async active(vals) {
@@ -419,27 +422,11 @@
       },*/
 
       async loadArticle(id) {
-        this.ignoreChanges = true;
-
-        let article = await this.$store.dispatch('getArticle', id);
-
-        if(article) {
-          this.active = [ id ];
-
-          this.article = article;
-        }
-        
-        setTimeout(() => {
-          this.ignoreChanges = false;
-        }, 1);
+        this.active = [ id ];
       },
 
       async reloadCodex() {
-        let dict = { };
-
-        // Build the article and children list
-        for(let article of await this.$store.dispatch('getArticlesOfType', { type: null }))
-          dict[article.id] = article;
+        let dict = await this.$store.dispatch('getArticles', { type: null });
 
         this.codexMap = dict;
         this.codex = [];

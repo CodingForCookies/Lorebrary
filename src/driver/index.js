@@ -18,7 +18,7 @@ export class Driver {
         this.store = opts.store || DEFAULT_STORE;
 
         // Additional capabilities beyond basic storage
-        this.capabilities = { };
+        this.capabilities = [];
     }
 
     getStore() {
@@ -29,8 +29,8 @@ export class Driver {
         return this.capabilities;
     }
 
-    getCapability(id) {
-        return this.capabilities[id];
+    hasCapability(id) {
+        return !!this.capabilities[id];
     }
 
     // Return true if enough configuration has been done for this storage driver to be enabled.
@@ -60,17 +60,11 @@ export class Store {
     async saveUniverse(id, data) { }
 
     async deleteUniverse(id) { }
-
-    /**
-     * args: { type, search }
-     * Returns all articles marked with the specified { type }
-     */
-    async getArticlesOfType(universe, opts) { return null; }
     
     /**
      * args: { type, search }
      * Returns the articles that are a child of the defined parent. If parent is null, return all articles with no parent.
-     * This should return { id, icon, name, children? }.
+     * This should return { id, icon, name, tags, children? }.
      */
     async getArticles(universe, opts) { return null; }
     
@@ -84,6 +78,24 @@ export class Store {
      * false: remove them as well.
      */
     async deleteArticle(universe, opts) { }
+
+    /**
+     * Return all resources of { type }. Resources are not expected to return the full content in this array. Image resources
+     * should return a smaller { blob } preview if it's stored internally to lower network usage.
+     */
+    async getResources(universe, opts) { }
+
+    /**
+     * Return the requested resource in its entirety.
+     */
+    async getResource(universe, id) { }
+
+    async saveResource(universe, resource) { }
+
+    /**
+     * Removes a resource. This doesn't do any cleanup, so we should verify all usages of getResource.
+     */
+    async deleteResource(universe, opts) { }
 }
 
 // TODO: Allow creating multiple credentials for a single driver. i.e. store two universes in two different google drive accounts.

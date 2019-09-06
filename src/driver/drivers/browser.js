@@ -18,11 +18,15 @@ export class BrowserStore extends Store {
         
         this.universes = new Datastore('universes');
         this.articles = new Datastore('articles');
+        
+        this.resources = new Datastore('resources');
     }
 
     async init() {
         this.universes.loadDatabase();
         this.articles.loadDatabase();
+        
+        this.resources.loadDatabase();
     }
 
 
@@ -44,7 +48,7 @@ export class BrowserStore extends Store {
         this.universes.remove({ id });
     }
 
-    async getArticlesOfType(universe, opts) {
+    getArticles(universe, opts) {
         if(opts.search !== undefined) {
             opts.name = new RegExp(escapeRegex(opts.search), 'gi');
             delete opts.search;
@@ -54,20 +58,12 @@ export class BrowserStore extends Store {
             this.articles.find({
                 ...{ universe },
                 ...opts
-            }, (err, result) => resolve(result))
-        });
-    }
-
-    async getArticles(universe, opts) {
-        if(opts.search !== undefined) {
-            opts.name = new RegExp(escapeRegex(opts.search), 'gi');
-            delete opts.search;
-        }
-
-        return new Promise(resolve => {
-            this.articles.find({
-                ...{ universe },
-                ...opts
+            }, {
+                id: 1,
+                icon: 1,
+                name: 1,
+                tags: 1,
+                parent: 1
             }, (err, result) => {
                 let articles = { };
                 for(let article of result) {
@@ -80,13 +76,13 @@ export class BrowserStore extends Store {
                             articles[article.parent].children = [];
                     }
 
-                    resolve(result);
+                    resolve(articles);
                 });
             });
         });
     }
     
-    async getArticle(universe, id) {
+    getArticle(universe, id) {
         return new Promise(resolve => this.articles.findOne({ universe, id }, (err, result) => resolve(result)));
     }
 
@@ -124,6 +120,44 @@ export class BrowserStore extends Store {
             await Promise.all(promises);
         }
     }
+
+    
+    getResources(universe, opts) {
+        if(opts.search !== undefined) {
+            opts.name = new RegExp(escapeRegex(opts.search), 'gi');
+            delete opts.search;
+        }
+
+        return new Promise(resolve => {
+            this.resources.find({
+                ...{ universe },
+                ...opts
+            }, (err, result) => {
+                let resources = { };
+                for(let resource of result) {
+                    resources[resource.id] = resource;
+                }
+                resolve(resources);
+            });
+        });
+    }
+
+    getResource(universe, id) {
+        return new Promise(resolve => this.resources.findOne({ universe, id }, (err, result) => resolve(result)));
+    }
+
+    async saveResource(universe, resource) {
+        this.resources.update({ universe, id: resource.id }, {
+            ...{ universe },
+            ...resource
+        }, {
+            upsert: true
+        });
+    }
+
+    async deleteResource(universe, id) {
+        this.resources.remove({ universe, id });
+    }
 }
 
 export default class BrowserDriver extends Driver {
@@ -144,6 +178,10 @@ export default class BrowserDriver extends Driver {
         });
 
         this.store = new BrowserStore();
+
+        this.capabilities = {
+            'image.blob': false // Don't allow storing image blobs. Not enough space.
+        };
     }
 
     isEnabled() {
