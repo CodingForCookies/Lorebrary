@@ -70,7 +70,7 @@
   export default {
     data: () => ({
       acknowledged: localStorage.getItem("acknowledged"),
-      version: '0.0.1',
+      version: process.env.VUE_APP_VERSION,
       changelog: null
     }),
     methods: {

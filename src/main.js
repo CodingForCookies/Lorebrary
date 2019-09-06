@@ -12,15 +12,22 @@ const isProd = process.env.NODE_ENV === 'production';
 
 Vue.use(VueAnalytics, {
   id: 'UA-147224195-1',
+  fields: {
+    dimension1: process.env.VUE_APP_VERSION
+  },
+
   router,
   autoTracking: {
     exception: true,
+
+    // Use screenview instead of pages since we don't care about the entire route (including UUIDs), only how they navigate.
+    // screenview: true,
     pageviewTemplate(route) {
       return route.fullPath;
     }
   },
   debug: {
-    enabled: false,
+    enabled: !isProd,
     sendHitTask: isProd
   }
 });

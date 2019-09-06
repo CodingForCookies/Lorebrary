@@ -9,111 +9,111 @@ export default new Router({
   routes: [
     {
       path: '/',
-      component: () => (import(/* webpackChunkName: "about" */ './views/main/Main.vue')),
+      component: () => (import(/* webpackChunkName: "main" */ './views/main/Main.vue')),
       children: [
         {
           path: 'search',
           name: 'Global Search',
-          component: () => (import(/* webpackChunkName: "about" */ './views/Search.vue'))
+          component: () => (import(/* webpackChunkName: "main" */ './views/Search.vue'))
         },
         {
           path: 'notes/:noteId?',
           name: 'Global Notes',
-          component: () => (import(/* webpackChunkName: "about" */ './views/Notes.vue'))
+          component: () => (import(/* webpackChunkName: "main" */ './views/Notes.vue'))
         },
 
         {
           path: '',
           name: 'Dashboard',
-          component: () => (import(/* webpackChunkName: "about" */ './views/main/Dashboard.vue'))
+          component: () => (import(/* webpackChunkName: "main" */ './views/main/Dashboard.vue'))
         },
         {
           path: 'account',
           name: 'Account',
-          component: () => (import(/* webpackChunkName: "about" */ './views/main/Account.vue'))
+          component: () => (import(/* webpackChunkName: "main" */ './views/main/Account.vue'))
         },
       ]
     },
     {
       path: '/universes/:universe',
-      component: () => (import(/* webpackChunkName: "about" */ './views/universe/Main.vue')),
+      component: () => (import(/* webpackChunkName: "universe" */ './views/universe/Main.vue')),
       children: [
         {
           path: 'search',
           name: 'Search',
-          component: () => (import(/* webpackChunkName: "about" */ './views/Search.vue'))
+          component: () => (import(/* webpackChunkName: "universe" */ './views/Search.vue'))
         },
         {
           path: 'notes/:noteId?',
           name: 'Notes',
-          component: () => (import(/* webpackChunkName: "about" */ './views/Notes.vue'))
+          component: () => (import(/* webpackChunkName: "universe" */ './views/Notes.vue'))
         },
 
         {
           path: '',
           name: 'Overview',
-          component: () => (import(/* webpackChunkName: "about" */ './views/Unimplemented.vue'))
+          component: () => (import(/* webpackChunkName: "universe" */ './views/Unimplemented.vue'))
         },
         {
           path: 'codex',
           name: 'Codex',
           meta: { darkAppBar: true },
-          component: () => (import(/* webpackChunkName: "about" */ './views/universe/Codex.vue'))
+          component: () => (import(/* webpackChunkName: "universe" */ './views/universe/Codex.vue'))
         },
         {
           path: 'maps',
           name: 'Atlas',
-          component: () => (import(/* webpackChunkName: "about" */ './views/Unimplemented.vue'))
+          component: () => (import(/* webpackChunkName: "universe" */ './views/Unimplemented.vue'))
         },
         {
           path: 'timelines',
           name: 'Timelines',
-          component: () => (import(/* webpackChunkName: "about" */ './views/Unimplemented.vue'))
+          component: () => (import(/* webpackChunkName: "universe" */ './views/Unimplemented.vue'))
         },
         {
           path: 'stories',
           name: 'Stories',
-          component: () => (import(/* webpackChunkName: "about" */ './views/Unimplemented.vue'))
+          component: () => (import(/* webpackChunkName: "universe" */ './views/Unimplemented.vue'))
         },
         {
           path: 'resources',
-          component: () => (import(/* webpackChunkName: "about" */ './views/Container.vue')),
+          component: () => (import(/* webpackChunkName: "resources" */ './views/Container.vue')),
           children: [
             {
               path: 'categories',
               name: 'Categories',
-              component: () => (import(/* webpackChunkName: "about" */ './views/Unimplemented.vue'))
+              component: () => (import(/* webpackChunkName: "resources" */ './views/Unimplemented.vue'))
             },
             {
               path: 'images',
               name: 'Images',
-              component: () => (import(/* webpackChunkName: "about" */ './views/Unimplemented.vue'))
+              component: () => (import(/* webpackChunkName: "resources" */ './views/Unimplemented.vue'))
             },
             {
               path: 'templates',
               name: 'Templates',
-              component: () => (import(/* webpackChunkName: "about" */ './views/Unimplemented.vue'))
+              component: () => (import(/* webpackChunkName: "resources" */ './views/Unimplemented.vue'))
             },
           ]
         },
         {
           path: 'settings',
-          component: () => (import(/* webpackChunkName: "about" */ './views/Container.vue')),
+          component: () => (import(/* webpackChunkName: "settings" */ './views/Container.vue')),
           children: [
             {
               path: 'collaborators',
               name: 'Collaborators',
-              component: () => (import(/* webpackChunkName: "about" */ './views/Unimplemented.vue'))
+              component: () => (import(/* webpackChunkName: "settings" */ './views/Unimplemented.vue'))
             },
             {
               path: 'followers',
               name: 'Followers',
-              component: () => (import(/* webpackChunkName: "about" */ './views/Unimplemented.vue'))
+              component: () => (import(/* webpackChunkName: "settings" */ './views/Unimplemented.vue'))
             },
             {
               path: 'settings',
               name: 'Settings',
-              component: () => (import(/* webpackChunkName: "about" */ './views/Unimplemented.vue'))
+              component: () => (import(/* webpackChunkName: "settings" */ './views/Unimplemented.vue'))
             }
           ]
         }
