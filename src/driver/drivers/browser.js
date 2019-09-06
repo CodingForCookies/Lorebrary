@@ -101,7 +101,7 @@ export class BrowserStore extends Store {
 
     async deleteArticle(universe, opts) {
         if(opts.retainChildren) {
-            let article = await this.getArticle(opts.id);
+            let article = await this.getArticle(universe, opts.id);
 
             this.articles.remove({ universe, id: opts.id });
             this.articles.update({ universe, parent: opts.id }, {

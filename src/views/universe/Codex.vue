@@ -518,16 +518,14 @@
       async deleteArticle() {
         this.deleting.loading = true;
         
-        setTimeout(async () => {
-          await this.$store.dispatch('deleteArticle', { id: this.article.id, retainChildren: !this.deleting.children });
+        await this.$store.dispatch('deleteArticle', { id: this.article.id, retainChildren: !this.deleting.children });
 
-          // Refresh the list
-          await this.reloadCodex();
+        // Refresh the list
+        await this.reloadCodex();
 
-          this.deleting.dialog = false;
+        this.deleting.dialog = false;
 
-          await this.newArticle();
-        }, 2000);
+        await this.newArticle();
       }
     },
     mounted() {
