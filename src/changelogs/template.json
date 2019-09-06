@@ -1,0 +1,16 @@
+{
+    "title": "Title for update",
+    "subtitle": "Typically be the type of release it was.",
+    
+    "media": "Link for media to show",
+    "text": [ "Quick explanation text", "Each array item is a new paragraph" ],
+
+    "changes": {
+        "additions": [ "List of additions" ],
+        "subtractions": [ "List of removals" ]
+    },
+    "bugs": {
+        "fixed": [ "List of bugs fixed" ],
+        "added": [ "List of known bugs added" ]
+    }
+}
