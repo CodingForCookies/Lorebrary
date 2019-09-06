@@ -130,7 +130,7 @@ export default class BrowserDriver extends Driver {
     constructor(id) {
         super(id, {
             icon: 'fas fa-sticky-note',
-            name: 'Local Storage',
+            name: 'Browser Storage',
             info: {
                 description: 'Saves the universe to a your browser\'s local storage.',
                 good: [
