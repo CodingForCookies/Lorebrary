@@ -98,14 +98,12 @@
               @mention="loadArticle" />
 
             <v-btn v-if="this.active.length > 0"
-              class="mb-12"
               absolute
               top right
               min-width="60"
               min-height="60"
-              depressed tile
+              dark depressed tile
               :ripple="false"
-              color="grey lighten-3"
               @click="toggleEditing">
               <v-icon>fas fa-{{ isEditing ? 'eye' : 'pencil-alt' }}</v-icon>
             </v-btn>
@@ -113,13 +111,15 @@
         </v-card>
       </v-flex>
       <v-flex xs12 md3>
-        <v-card light flat tile color="rgba(0, 0, 0, .07)" class="fill-height">
+        <v-card flat tile :color="$vuetify.theme.dark ? 'blue-grey darken-4' : 'rgba(0, 0, 0, .07)'" class="fill-height">
           <div class="fill-height">
             <v-img
+              v-if="article.image"
               src="https://picsum.photos/id/11/100/60"
               lazy-src="https://picsum.photos/id/11/100/60"
               aspect-ratio="1"
-              class="grey lighten-2">
+              class="grey lighten-2"
+                @click="image.dialog = true">
               <template v-slot:placeholder>
                 <v-row
                   class="fill-height ma-0"
@@ -129,8 +129,21 @@
                 </v-row>
               </template>
             </v-img>
+            <div v-else-if="isEditing">
+              <!-- Image editing -->
+              <v-btn v-if="isEditing"
+                block
+                min-width="60"
+                min-height="60"
+                dark depressed tile
+                :ripple="false"
+                @click="image.dialog = true">
+                <v-icon class="mr-3">fas fa-image</v-icon>
+                Image
+              </v-btn>
+            </div>
 
-            <v-layout row class="mx-0">
+            <v-layout row class="mx-0 transparent-bg">
               <v-flex v-for="[icon, name] in [['map', 'Map'], ['list', 'Mentions'], ['history', 'History']]" :key="icon">
                 <v-btn text block tile :height="64">
                   <div>
@@ -196,6 +209,12 @@
       </v-btn>
     </v-snackbar>
     
+    <resource-editor
+      :visible.sync="image.dialog"
+      v-model="article.image"
+      type="images"
+      selection />
+    
     <v-dialog
       v-model="deleting.dialog"
       :persistent="deleting.loading"
@@ -247,9 +266,10 @@
 
 <script>
   import Editor from '../../components/Editor.vue'
+  import ResourceEditor from '../../components/ResourceEditor.vue'
 
   export default {
-    components: { Editor },
+    components: { Editor, ResourceEditor },
     data: () => ({
       search: {
         text: '',
@@ -332,6 +352,9 @@
       articleParent: null,
 
       editing: false,
+      image: {
+        dialog: false
+      },
       deleting: {
         dialog: false,
         loading: false,

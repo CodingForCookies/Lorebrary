@@ -147,6 +147,7 @@ export default new Vuex.Store({
         parent: article.parent,
 
         icon: article.icon,
+        image: article.image,
         name: article.name,
         tags: article.tags,
         content: article.content
