@@ -19,6 +19,7 @@
                             <v-list-item @click="filter.category = null">
                                 All
                             </v-list-item>
+                            <v-divider />
                             <v-list-item v-for="(cat, i) in categories" :key="i"
                                     @click="filter.category = cat.id">
                                 {{ cat.name }}
