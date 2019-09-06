@@ -6,6 +6,25 @@ import vuetify from './plugins/vuetify';
 import 'roboto-fontface/css/roboto/roboto-fontface.css';
 import '@fortawesome/fontawesome-free/css/all.css';
 
+import VueAnalytics from 'vue-analytics'
+
+const isProd = process.env.NODE_ENV === 'production';
+
+Vue.use(VueAnalytics, {
+  id: 'UA-147224195-1',
+  router,
+  autoTracking: {
+    exception: true,
+    pageviewTemplate(route) {
+      return route.fullPath;
+    }
+  },
+  debug: {
+    enabled: false,
+    sendHitTask: isProd
+  }
+});
+
 Vue.config.productionTip = false;
 
 import './messaging';
