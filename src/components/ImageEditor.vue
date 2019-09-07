@@ -4,7 +4,7 @@
                 :value="visible"
                 @input="$emit('update:visible', $event)"
                 width="800">
-            <v-card>
+            <v-card :loading="!items">
                 <v-text-field
                     v-model="filter.name"
                     label="Search"
@@ -14,15 +14,16 @@
                     hide-details />
 
                 <v-row no-gutters style="min-height:350px">
-                    <v-col cols="12" md="3">
-                        <v-list dense dark class="blue-grey darken-3" style="min-height:100%">
-                            <v-list-item @click="filter.category = null">
+                    <v-col cols="12" md="3" class="blue-grey darken-3">
+                        <v-list v-if="tags"
+                                dense dark style="min-height:100%">
+                            <v-list-item @click="filter.tags = ''">
                                 All
                             </v-list-item>
                             <v-divider />
-                            <v-list-item v-for="(cat, i) in categories" :key="i"
-                                    @click="filter.category = cat.id">
-                                {{ cat.name }}
+                            <v-list-item v-for="(tag, i) in tags" :key="i"
+                                    @click="filter.tags = tag">
+                                {{ tag }}
                             </v-list-item>
                         </v-list>
                     </v-col>
@@ -94,12 +95,12 @@
                     v-model="editing.edit.name" />
 
                 <v-card-text>
-                    <v-select
-                        label="Category"
-                        v-model="editing.edit.category"
-                        :items="categories"
-                        item-value="id"
-                        item-text="name"
+                    <v-combobox
+                        label="Tags"
+                        v-model="editing.edit.tags"
+                        append-icon=""
+                        chips
+                        multiple
                         clearable
                         @click.stop="" />
 
@@ -139,7 +140,7 @@
         data: () => ({
             filter: {
                 name: '',
-                category: null
+                tags: ''
             },
 
             selected: null,
@@ -149,17 +150,22 @@
                 edit: null
             },
 
-            categories: [
-                { id: 'oof', name: 'Animals' },
-                { id: 'wew', name: 'Places' }
-            ],
             items: null
         }),
         computed: {
-            filteredItems() {
+            tags() {
+                if(!this.items) return null;
+                let tags = [];
+                for(let item of Object.values(this.items)) {
+                    if(!item.tags) continue;
+                    item.tags.forEach(v => !tags.includes(v) ? tags.push(v) : undefined);
+                }
+                return tags;
+            }, filteredItems() {
                 if(!this.items) return [];
                 let name = this.filter.name.toLowerCase();
-                return Object.values(this.items).filter(item => (this.filter.category == null || item.category == this.filter.category)
+                let tags = this.filter.tags.toLowerCase();
+                return Object.values(this.items).filter(item => (!this.filter.tags || item.tags.some(v => v.includes(tags)))
                                                     && item.name.toLowerCase().includes(name));
             }
         },

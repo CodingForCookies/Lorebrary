@@ -203,7 +203,7 @@ export default new Vuex.Store({
         
         type: resource.type,
         name: resource.name,
-        category: resource.category,
+        tags: resource.tags,
         
         src: resource.src,
         blob: resource.blob
