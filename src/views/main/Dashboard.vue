@@ -1,7 +1,7 @@
 <template>
-  <v-container grid-list-md>
-    <v-layout row wrap>
-      <v-flex xs12 md7>
+  <v-container>
+    <v-row>
+      <v-col cols="12" md="7">
         <v-card outlined>
           <v-btn
             block text tile
@@ -43,28 +43,26 @@
             </v-list-item>
           </v-list>
         </v-card>
-      </v-flex>
-      <v-flex xs12 md5>
-        <v-layout column>
-          <v-flex v-for="(article, i) in news" :key="i">
-            <v-card hover outlined @click="">
-              <v-list-item three-line>
-                <v-list-item-content>
-                  <div class="overline mb-4">{{ article.category }}</div>
-                  <v-list-item-title class="headline mb-1">{{ article.name }}</v-list-item-title>
-                  <v-list-item-subtitle>Greyhound divisely hello coldly fonwderfully</v-list-item-subtitle>
-                </v-list-item-content>
+      </v-col>
+      <v-col cols="12" md="5">
+        <v-card v-for="(article, i) in news" :key="i"
+            class="mb-2"
+            hover outlined>
+          <v-list-item three-line>
+            <v-list-item-content>
+              <div class="overline mb-4">{{ article.category }}</div>
+              <v-list-item-title class="headline mb-1">{{ article.name }}</v-list-item-title>
+              <v-list-item-subtitle>Greyhound divisely hello coldly fonwderfully</v-list-item-subtitle>
+            </v-list-item-content>
 
-                <v-list-item-avatar
-                  tile
-                  size="80"
-                  color="grey" />
-              </v-list-item>
-            </v-card>
-          </v-flex>
-        </v-layout>
-      </v-flex>
-    </v-layout>
+            <v-list-item-avatar
+              tile
+              size="80"
+              color="grey" />
+          </v-list-item>
+        </v-card>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 

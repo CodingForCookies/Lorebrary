@@ -1,18 +1,20 @@
 <template>
-  <v-container fluid class="py-0 fill-height">
-    <v-card-text v-if="!codex"
+  <v-container fluid fill-height no-gutters class="pa-0">
+    <v-row v-if="!codex"
         class="my-4 text-center">
       <v-progress-circular
         :size="32"
         :width="2"
         color="primary"
         indeterminate />
-    </v-card-text>
-    <v-layout row v-else>
-      <v-flex xs12 md3>
+    </v-row>
+    <v-row v-else
+        no-gutters
+        class="fill-height">
+      <v-col cols="12" md="4" lg="3">
         <v-card dark flat tile outlined color="blue-grey darken-4" class="fill-height codex-list">
-          <v-layout row no-gutters>
-            <v-flex v-for="([icon, name], id) in types" :key="icon" no-gutters>
+          <v-row no-gutters>
+            <v-col v-for="([icon, name], id) in types" :key="icon">
               <v-btn text block tile :height="64" @click="type = id"
                   :to="{ name: 'Codex', params: { universe: $route.params.universe, type: id }}"
                   exact>
@@ -21,8 +23,8 @@
                   <div class="mt-2 overline">{{ name }}</div>
                 </div>
               </v-btn>
-            </v-flex>
-          </v-layout>
+            </v-col>
+          </v-row>
 
           <v-text-field
             v-model="search.text"
@@ -60,10 +62,10 @@
             </v-treeview>
           </v-card-text>
         </v-card>
-      </v-flex>
-      <v-flex xs12 md9 lg6>
+      </v-col>
+      <v-col cols="12" md="8" lg="6">
         <v-card light flat tile class="fill-height">
-          <v-layout column
+          <v-col
               class="fill-height">
             <v-card-title>
               <v-text-field
@@ -97,7 +99,8 @@
               class="pa-4"
               v-model="article.content"
               :readonly="!isEditing"
-              @mention="loadArticle" />
+              @mention="loadArticle"
+              min-height="350" />
 
             <v-btn v-if="this.active.length > 0"
               absolute
@@ -109,9 +112,9 @@
               @click="toggleEditing">
               <v-icon>fas fa-{{ isEditing ? 'eye' : 'pencil-alt' }}</v-icon>
             </v-btn>
-          </v-layout>
+          </v-col>
         </v-card>
-      </v-flex>
+      </v-col>
       <v-navigation-drawer
         v-model="$store.state.window.rightDrawer"
         absolute right
@@ -123,7 +126,7 @@
             @image="image.dialog = true"
             @delete="deleting.dialog = true" />
       </v-navigation-drawer>
-      <v-flex md3 class="d-none d-lg-block">
+      <v-col lg="3" class="d-none d-lg-block">
         <v-card flat tile :color="$vuetify.theme.dark ? 'blue-grey darken-4' : 'rgba(0, 0, 0, .07)'" class="fill-height">
           <article-info
             :is-editing="isEditing"
@@ -132,8 +135,8 @@
             @image="image.dialog = true"
             @delete="deleting.dialog = true" />
         </v-card>
-      </v-flex>
-    </v-layout>
+      </v-col>
+    </v-row>
 
     <v-snackbar
       v-model="unsaved"

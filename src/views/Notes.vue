@@ -1,7 +1,7 @@
 <template>
-  <v-container grid-list-md>
-    <v-layout row wrap>
-      <v-flex md4>
+  <v-container>
+    <v-row>
+      <v-col cols="12" md="4">
         <v-card color="card">
           <v-list dense>
             <v-list-item @click="selected = null">
@@ -25,11 +25,11 @@
             </v-list-item>
           </v-list>
         </v-card>
-      </v-flex>
-      <v-flex md8>
+      </v-col>
+      <v-col cols="12" md="8">
         <edit-note v-model="note" />
-      </v-flex>
-    </v-layout>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 

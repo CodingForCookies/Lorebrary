@@ -96,7 +96,8 @@
       </div>
     </editor-menu-bubble>
 
-    <editor-content ref="input" class="editor__content" :editor="editor" />
+    <editor-content ref="input" class="editor__content" :editor="editor"
+      :style="minHeight ? 'min-height:' + minHeight + 'px' : undefined" />
     
     <div class="suggestion-list" v-show="showSuggestions" ref="suggestions">
       <template v-if="hasResults">
@@ -149,7 +150,7 @@
       EditorMenuBubble,
       EditorContent,
     },
-    props: ['readonly', 'value'],
+    props: ['minHeight', 'readonly', 'value'],
     data() {
       return {
         ignoreUpdate: false,

@@ -28,16 +28,17 @@
             </v-btn>
         </div>
 
-        <v-layout row class="mx-0 transparent-bg">
-            <v-flex v-for="[icon, name] in [['map', 'Map'], ['list', 'Mentions'], ['history', 'History']]" :key="icon">
-            <v-btn text block tile :height="64">
-                <div>
-                <v-icon small>fas fa-{{ icon }}</v-icon>
-                <div class="mt-2 overline">{{ name }}</div>
-                </div>
-            </v-btn>
-            </v-flex>
-        </v-layout>
+        <v-row class="mx-0 transparent-bg" no-gutters>
+            <v-col v-for="[icon, name] in [['map', 'Map'], ['list', 'Mentions'], ['history', 'History']]" :key="icon"
+                    cols="4">
+                <v-btn text block tile :height="64">
+                    <div>
+                    <v-icon small>fas fa-{{ icon }}</v-icon>
+                    <div class="mt-2 overline">{{ name }}</div>
+                    </div>
+                </v-btn>
+            </v-col>
+        </v-row>
 
         <v-card-text>
             <div class="mb-6">

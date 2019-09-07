@@ -1,10 +1,6 @@
 <template>
   <v-container>
-    <v-layout
-      text-center
-      wrap>
-      this is a page
-    </v-layout>
+    this is a page
   </v-container>
 </template>
 
