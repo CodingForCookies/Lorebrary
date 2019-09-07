@@ -10,7 +10,8 @@ export default new Vuex.Store({
   state: {
     window: {
       frame: false,
-      miniDrawer: true
+      miniDrawer: true,
+      rightDrawer: false
     },
     startup: {
       is: true,

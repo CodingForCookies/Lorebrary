@@ -57,7 +57,7 @@ export default new Router({
         {
           path: 'codex/:type?/:article?',
           name: 'Codex',
-          meta: { darkAppBar: true },
+          meta: { rightDrawer: true },
           component: () => (import(/* webpackChunkName: "universe" */ './views/universe/Codex.vue'))
         },
         {

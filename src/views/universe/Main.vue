@@ -75,7 +75,7 @@
 
       <v-spacer />
 
-      <v-btn icon :to="{ name: 'Search' }">
+      <!--<v-btn icon :to="{ name: 'Search' }">
         <v-icon>fas fa-search</v-icon>
       </v-btn>
       <v-btn icon :to="{ name: 'Notes' }">
@@ -83,7 +83,12 @@
       </v-btn>
       <v-btn icon :to="{ name: 'Account' }">
         <v-icon>fas fa-user</v-icon>
-      </v-btn>
+      </v-btn>-->
+
+      <v-app-bar-nav-icon
+        v-if="this.$route.meta.rightDrawer ? this.$route.meta.rightDrawer : undefined"
+        v-model="$store.state.window.rightDrawer"
+        @click.stop="$store.state.window.rightDrawer = !$store.state.window.rightDrawer" />
     </v-app-bar>
 
     <v-content v-if="!universe" class="my-4 text-center">

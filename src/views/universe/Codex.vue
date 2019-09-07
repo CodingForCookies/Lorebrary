@@ -61,7 +61,7 @@
           </v-card-text>
         </v-card>
       </v-flex>
-      <v-flex xs12 md6>
+      <v-flex xs12 md9 lg6>
         <v-card light flat tile class="fill-height">
           <v-layout column
               class="fill-height">
@@ -112,89 +112,25 @@
           </v-layout>
         </v-card>
       </v-flex>
-      <v-flex xs12 md3>
+      <v-navigation-drawer
+        v-model="$store.state.window.rightDrawer"
+        absolute right
+        temporary>
+        <article-info
+            :is-editing="isEditing"
+            :article="article"
+            :article-image="articleImage"
+            @image="image.dialog = true"
+            @delete="deleting.dialog = true" />
+      </v-navigation-drawer>
+      <v-flex md3 class="d-none d-lg-block">
         <v-card flat tile :color="$vuetify.theme.dark ? 'blue-grey darken-4' : 'rgba(0, 0, 0, .07)'" class="fill-height">
-          <div class="fill-height">
-            <v-img v-if="article.image"
-                :src="articleImage ? (articleImage.src || articleImage.blob) : undefined"
-                aspect-ratio="1"
-                class="grey lighten-2"
-                @click="image.dialog = true">
-              <template v-slot:placeholder>
-                <v-row
-                  class="fill-height ma-0"
-                  align="center"
-                  justify="center">
-                  <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
-                </v-row>
-              </template>
-            </v-img>
-            <div v-else-if="isEditing">
-              <!-- Image editing -->
-              <v-btn v-if="isEditing"
-                block
-                min-width="60"
-                min-height="60"
-                dark depressed tile
-                :ripple="false"
-                @click="image.dialog = true">
-                <v-icon class="mr-3">fas fa-image</v-icon>
-                Image
-              </v-btn>
-            </div>
-
-            <v-layout row class="mx-0 transparent-bg">
-              <v-flex v-for="[icon, name] in [['map', 'Map'], ['list', 'Mentions'], ['history', 'History']]" :key="icon">
-                <v-btn text block tile :height="64">
-                  <div>
-                    <v-icon small>fas fa-{{ icon }}</v-icon>
-                    <div class="mt-2 overline">{{ name }}</div>
-                  </div>
-                </v-btn>
-              </v-flex>
-            </v-layout>
-
-            <v-card-text>
-              <div class="mb-6">
-                <div class="headline cinzel">Tags</div>
-                <v-divider />
-                <v-combobox
-                  v-model="article.tags"
-                  label="No tags added"
-                  append-icon=""
-                  full-width
-                  multiple
-                  chips
-                  hide-details
-                  :readonly="!isEditing">
-                  <template v-slot:selection="data">
-                    <v-chip
-                      dark
-                      v-bind="data.attrs"
-                      :input-value="data.selected"
-                      @click:close="data.parent.selectItem(data.item)">
-                      {{ data.item }}
-                    </v-chip>
-                  </template>
-                </v-combobox>
-              </div>
-
-              <v-fade-transition>
-                <div class="mb-6" v-if="isEditing && article.id">
-                  <div class="headline cinzel">Actions</div>
-                  <v-divider class="mb-3" />
-                  <v-btn
-                      depressed block color="error"
-                      @click="deleting.dialog = true">Delete Article</v-btn>
-                </div>
-              </v-fade-transition>
-
-              <!--<div class="mb-6">
-                <div class="headline cinzel">Edited By</div>
-                <v-chip dark class="ma-1">Stumblinbear</v-chip>
-              </div>-->
-            </v-card-text>
-          </div>
+          <article-info
+            :is-editing="isEditing"
+            :article="article"
+            :article-image="articleImage"
+            @image="image.dialog = true"
+            @delete="deleting.dialog = true" />
         </v-card>
       </v-flex>
     </v-layout>
@@ -267,9 +203,11 @@
 <script>
   import Editor from '../../components/Editor.vue'
   import ImageEditor from '../../components/ImageEditor.vue'
+  
+  import ArticleInfo from './ArticleInfo.vue'
 
   export default {
-    components: { Editor, ImageEditor },
+    components: { Editor, ImageEditor, ArticleInfo },
     data: () => ({
       search: {
         text: '',
