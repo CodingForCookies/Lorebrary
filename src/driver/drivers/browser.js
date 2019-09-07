@@ -60,6 +60,7 @@ export class BrowserStore extends Store {
                 ...opts
             }, {
                 id: 1,
+                type: 1,
                 icon: 1,
                 name: 1,
                 tags: 1,

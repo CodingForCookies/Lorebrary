@@ -385,6 +385,7 @@
         this.reloadCodex();
       },
       '$route.params.article'(val) {
+        if(this.article.id == val) return;
         this.loadArticle(val);
       },
 
@@ -416,6 +417,9 @@
         this.articleParent = null;
         
         this.article = await this.$store.dispatch('getArticle', vals[0]);
+
+        if(this.article)
+          this.$router.push({ name: 'Codex', params: Object.assign(this.$route.params, { type: this.article.type, article: this.article.id }) });
       }
     },
 
@@ -534,10 +538,14 @@
     },
     mounted() {
       if(!this.$route.params.type) {
-        this.$router.replace({ name: 'Codex', params: { universe: this.$route.params.universe, type: 'other' } })
+        this.$router.replace({ name: 'Codex', params: Object.assign(this.$route.params, { type: 'other' }) });
       }
       
       this.type = this.$route.params.type;
+
+      if(this.$route.params.article) {
+        this.loadArticle(this.$route.params.article);
+      }
     }
   }
 </script>

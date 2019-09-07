@@ -288,7 +288,7 @@
         });
       },
 
-      'suggestions.query'(val) {
+      async 'suggestions.query'(val) {
         // Require at least 3 characters to search
         if(!val || val.length < 3) {
           this.destroyPopup();
@@ -298,23 +298,21 @@
         
         this.suggestions.navigatedIndex = 0;
 
-        setTimeout(async () => {
-          // If the popup is gone, ignore the result. :(
-          if(this.suggestions.navigatedIndex == null) return;
+        // If the popup is gone, ignore the result. :(
+        if(this.suggestions.navigatedIndex == null) return;
 
-          // If the query is not the same, bail.
-          if(this.suggestions.query != val) return;
+        // If the query is not the same, bail.
+        if(this.suggestions.query != val) return;
 
-          let result = await this.$store.dispatch('getArticlesOfType', { search: val })
+        let result = await this.$store.dispatch('getArticles', { search: val });
 
-          // If the popup is gone, ignore the result. :(
-          if(this.suggestions.navigatedIndex == null) return;
+        // If the popup is gone, ignore the result. :(
+        if(this.suggestions.navigatedIndex == null) return;
 
-          this.suggestions.items = result;
+        this.suggestions.items = Object.values(result);
 
-          // Update the popup
-          this.renderPopup();
-        }, 250);
+        // Update the popup
+        this.renderPopup();
       }
     },
     methods: {
