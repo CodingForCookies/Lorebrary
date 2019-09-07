@@ -93,11 +93,12 @@
         color="primary"
         indeterminate />
     </v-content>
-    <v-content v-else>
+    <v-content v-else
+        style="margin-bottom:40px">
       <router-view />
-    </v-content>
     
-    <app-footer />
+      <app-footer />
+    </v-content>
   </v-app>
 </template>
 

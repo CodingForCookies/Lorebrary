@@ -81,7 +81,8 @@
       </v-btn>
     </v-app-bar>
 
-    <v-content>
+    <v-content
+        style="margin-bottom:40px">
       <router-view />
     </v-content>
       

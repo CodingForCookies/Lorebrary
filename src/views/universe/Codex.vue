@@ -73,7 +73,7 @@
                 single-line
                 full-width
                 :readonly="!isEditing"
-                :hide-details="!article.parent"
+                :hide-details="!article || !article.parent"
                 :hint="article.parent ? 'Child of \'' + (articleParent || codexMap[article.parent]).name + '\'' : null"
                 persistent-hint>
                 <template v-slot:prepend>
@@ -115,11 +115,10 @@
       <v-flex xs12 md3>
         <v-card flat tile :color="$vuetify.theme.dark ? 'blue-grey darken-4' : 'rgba(0, 0, 0, .07)'" class="fill-height">
           <div class="fill-height">
-            <v-img
-              v-if="article.image"
-              :src="articleImage ? (articleImage.src || articleImage.blob) : undefined"
-              aspect-ratio="1"
-              class="grey lighten-2"
+            <v-img v-if="article.image"
+                :src="articleImage ? (articleImage.src || articleImage.blob) : undefined"
+                aspect-ratio="1"
+                class="grey lighten-2"
                 @click="image.dialog = true">
               <template v-slot:placeholder>
                 <v-row
@@ -420,6 +419,9 @@
 
         if(this.article)
           this.$router.push({ name: 'Codex', params: Object.assign(this.$route.params, { type: this.article.type, article: this.article.id }) });
+        else{
+          this.newArticle();
+        }
       }
     },
 
