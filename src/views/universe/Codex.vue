@@ -381,7 +381,10 @@
 
     watch: {
       type(val, oldVal) {
+        if(val == oldVal) return;
+
         this.reloadCodex();
+        this.newArticle();
       },
       '$route.params.article'(val) {
         if(this.article.id == val) return;
@@ -479,6 +482,7 @@
         this.ignoreChanges = true;
 
         this.article = {
+          type: this.type,
           parent: parent ? parent.id : null,
           
           icon: 'box',
@@ -504,11 +508,7 @@
         if(isNew) {
           // this.codex = null;
         }
-
-        // We set the type here, instead of above, in case the user swaps tabs while creating a new article.
-        if(!this.article.type)
-          this.article.type = this.type;
-
+        
         await this.$store.dispatch('saveArticle', this.article);
 
         // Refresh the list
