@@ -4,7 +4,7 @@
             :src="articleImage ? (articleImage.src || articleImage.blob) : undefined"
             aspect-ratio="1"
             class="grey lighten-2"
-            @click="$emit('image')">
+            @click="isEditing ? $emit('image') : undefined">
             <template v-slot:placeholder>
                 <v-row
                     class="fill-height ma-0"
