@@ -55,7 +55,7 @@ export default new Router({
           component: () => (import(/* webpackChunkName: "universe" */ './views/Unimplemented.vue'))
         },
         {
-          path: 'codex',
+          path: 'codex/:type?/:article?',
           name: 'Codex',
           meta: { darkAppBar: true },
           component: () => (import(/* webpackChunkName: "universe" */ './views/universe/Codex.vue'))

@@ -41,7 +41,7 @@
               :key="item.name"
               class="two-lines"
               link
-              :to="{ name: item.route || item.name, params: { universe: universe.id } }"
+              :to="{ name: item.route || item.name, params: { ...{ universe: universe.id }, ...(item.params || { }) } }"
               :exact="item.exact === undefined ? true : item.exact">
               <v-list-item-icon>
                 <div class="mx-auto">

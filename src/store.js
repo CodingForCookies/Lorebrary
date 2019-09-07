@@ -72,6 +72,8 @@ export default new Vuex.Store({
     },
 
     async loadUniverses({ commit }) {
+      console.debug('loadUniverses');
+
       let promises = [];
 
       let universes = { };
@@ -97,6 +99,8 @@ export default new Vuex.Store({
       commit('setUniverses', universes);
     },
     async loadUniverse({ commit, state }, universeId) {
+      console.debug('loadUniverse', universeId);
+
       if(state.universeSelected == universeId) return;
 
       let universe = universeId ? state.universes[universeId] : null;
@@ -116,6 +120,8 @@ export default new Vuex.Store({
       state.universeLoading = false;
     },
     async saveUniverse({ commit, getters }, universe) {
+      console.debug('saveUniverse', universe);
+
       if(!universe.id) {
         universe.id = uuid.v4();
       }
@@ -132,17 +138,23 @@ export default new Vuex.Store({
     async getArticles({ commit, state, getters }, opts) {
       opts = opts || {};
       
+      console.debug('getArticles', opts);
+
       return await getters.driver.getStore().getArticles(state.universeSelected, opts);
     },
     async getArticle({ commit, state, getters }, opts) {
       opts = opts || {};
       
+      console.debug('getArticle', opts);
+
       return await getters.driver.getStore().getArticle(state.universeSelected, opts);
     },
     async saveArticle({ commit, state, getters }, article) {
       if(!article.id) {
         article.id = uuid.v4();
       }
+
+      console.debug('saveArticle', article);
 
       await getters.driver.getStore().saveArticle(state.universeSelected, {
         id: article.id,
@@ -159,6 +171,8 @@ export default new Vuex.Store({
     }, async deleteArticle({ commit, state, getters }, opts) {
       opts = opts || {};
       
+      console.debug('deleteArticle', opts);
+
       await getters.driver.getStore().deleteArticle(state.universeSelected, opts);
     },
 
@@ -166,15 +180,21 @@ export default new Vuex.Store({
     async getResources({ commit, state, getters }, opts) {
       opts = opts || {};
       
+      console.debug('getResources', opts);
+
       return await getters.driver.getStore().getResources(state.universeSelected, opts);
     },
     async getResource({ commit, state, getters }, id) {
+      console.debug('getResource', id);
+
       return await getters.driver.getStore().getResource(state.universeSelected, id);
     },
     async saveResource({ commit, state, getters }, resource) {
       if(!resource.id) {
         resource.id = uuid.v4();
       }
+
+      console.debug('saveResource', resource);
 
       if(!resource.type) throw new Error('Resource must have a type!');
 
@@ -192,6 +212,8 @@ export default new Vuex.Store({
     async deleteResource({ commit, state, getters }, opts) {
       opts = opts || {};
       
+      console.debug('deleteResource', opts);
+
       await getters.driver.getStore().deleteResource(state.universeSelected, opts);
     }
   }

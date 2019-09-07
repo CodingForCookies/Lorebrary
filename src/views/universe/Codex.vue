@@ -11,10 +11,12 @@
     <v-layout row v-else>
       <v-flex xs12 md3>
         <v-card dark flat tile outlined color="blue-grey darken-4" class="fill-height codex-list">
-          <v-layout row>
-            <v-flex v-for="[icon, name] in [['city', 'Places'], ['user', 'Beings'], ['box', 'Things'], ['book', 'Codex']]" :key="icon">
-              <v-btn text block tile :height="64">
-                <div>
+          <v-layout row no-gutters>
+            <v-flex v-for="([icon, name], id) in types" :key="icon" no-gutters>
+              <v-btn text block tile :height="64" @click="type = id"
+                  :to="{ name: 'Codex', params: { universe: $route.params.universe, type: id }}"
+                  exact>
+                <div class="text-center">
                   <v-icon small>fas fa-{{ icon }}</v-icon>
                   <div class="mt-2 overline">{{ name }}</div>
                 </div>
@@ -36,10 +38,10 @@
           <v-card-text>
             <v-treeview style="cursor:pointer"
               :search="search.text"
+              :filter="filterTree"
               :active.sync="active"
               :open.sync="open"
               :items="codex"
-              :filter="filterTree"
               v-model="tree"
               item-key="id"
               hoverable
@@ -275,6 +277,14 @@
         tags: []
       },
 
+      types: {
+        places: ['city', 'Places'],
+        beings: ['user', 'Beings'],
+        things: ['box', 'Things'],
+        other: ['book', 'Codex']
+      },
+      type: null,
+
       active: [],
 
       tree: [],
@@ -340,7 +350,7 @@
       ],*/
 
       article: {
-        type: null,
+        type: 'other',
         parent: null,
 
         icon: 'box',
@@ -371,6 +381,13 @@
     },
 
     watch: {
+      type(val, oldVal) {
+        this.reloadCodex();
+      },
+      '$route.params.article'(val) {
+        this.loadArticle(val);
+      },
+
       'deleting.dialog'(val) {
         if(val) {
           this.deleting.loading = false;
@@ -405,7 +422,7 @@
     methods: {
       filterTree(item, filter) {
         filter = filter.toLowerCase();
-        return item.name.toLowerCase().includes(filter) || item.tags.some(v => v.toLowerCase() == filter);
+        return item.name.toLowerCase().includes(filter) || item.tags.some(v => v.toLowerCase().indexOf(filter) !== -1);
       },
       /*async fetchChildren(item) {
         this.ignoreChanges = true;
@@ -426,7 +443,7 @@
       },
 
       async reloadCodex() {
-        let dict = await this.$store.dispatch('getArticles', { type: null });
+        let dict = await this.$store.dispatch('getArticles', { type: this.type });
 
         this.codexMap = dict;
         this.codex = [];
@@ -456,7 +473,7 @@
         this.ignoreChanges = true;
 
         this.article = {
-          type: null,
+          type: this.type,
           parent: parent ? parent.id : null,
           
           icon: 'box',
@@ -516,7 +533,11 @@
       }
     },
     mounted() {
-      this.reloadCodex();
+      if(!this.$route.params.type) {
+        this.$router.replace({ name: 'Codex', params: { universe: this.$route.params.universe, type: 'other' } })
+      }
+      
+      this.type = this.$route.params.type;
     }
   }
 </script>
