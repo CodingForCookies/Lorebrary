@@ -1,0 +1,19 @@
+{
+    "title": "Codex Work",
+    "subtitle": "Types and Images and Linking, oh my!",
+    
+    "text": [
+        "Added in a WIP image management system (though categories are not yet configurable, that's coming fairly soon), and you can now set a custom image on articles!"
+    ],
+
+    "changes": {
+        "additions": [
+            "A fabulous image management interface",
+            "URLs are now rewritten when navigating the codex page, allowing linking directly to them!",
+            "Renamed Local Storage to Browser Storage"
+        ]
+    },
+    "bugs": {
+        "fixed": [ "Fix an error occuring when deleting articles" ]
+    }
+}
