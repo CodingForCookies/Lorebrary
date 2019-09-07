@@ -10,7 +10,8 @@
         "additions": [
             "A fabulous image management interface",
             "URLs are now rewritten when navigating the codex page, allowing linking directly to them!",
-            "Renamed Local Storage to Browser Storage"
+            "Renamed Local Storage to Browser Storage",
+            "On the codex page, the righthand menu now appears in a pull-out menu when viewed on smaller devices"
         ]
     },
     "bugs": {
