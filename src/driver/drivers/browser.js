@@ -99,6 +99,7 @@ export class BrowserStore extends Store {
                 // we don't care too much about queries, as they're pretty much instant,
                 // just do it here.
                 this.articles.find({
+                    universe,
                     $or: result.mentions.map(v => ({ id: v.id }))
                 }, { id: 1, name: 1 }, (err, result2) => {
                     for(let article of result2) {
@@ -120,14 +121,6 @@ export class BrowserStore extends Store {
                 upsert: true
             }, (err) => {
                 resolve();
-                // Update all articles that mention this one
-
-                // The library we use doesn't allow easily doing this in a single query. However,
-                // since we're doing it locally, speed and efficiency doesn't matter much.
-
-                this.articles.find({
-                    'mentions.id': article.id
-                }, { id: 1, name: 1 })
             });
         });
     }
@@ -161,14 +154,15 @@ export class BrowserStore extends Store {
     async getArticleMentions(universe, id) {
         return new Promise(resolve => {
             this.articles.find({
-                universe, id
+                universe,
+                'mentions.id': id
             }, {
                 id: 1,
                 type: 1,
                 icon: 1,
                 name: 1,
                 tags: 1
-            }, (err, result2) => {
+            }, (err, result) => {
                 resolve(result);
             });
         });

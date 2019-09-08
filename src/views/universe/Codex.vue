@@ -123,6 +123,7 @@
             :article="article"
             :article-image="articleImage"
             @image="image.dialog = true"
+            @mentions="mentions.dialog = true"
             @delete="deleting.dialog = true" />
       </v-navigation-drawer>
       <v-col lg="3" class="d-none d-lg-block">
@@ -132,6 +133,7 @@
             :article="article"
             :article-image="articleImage"
             @image="image.dialog = true"
+            @mentions="mentions.dialog = true"
             @delete="deleting.dialog = true" />
         </v-card>
       </v-col>
@@ -152,6 +154,46 @@
       :visible.sync="image.dialog"
       v-model="article.image"
       selection />
+    
+    <v-dialog
+      v-model="mentions.dialog"
+      width="500">
+      <v-card v-if="!!article">
+        <v-card-title
+          class="headline"
+          primary-title>
+          Mentioned in:
+        </v-card-title>
+
+        <v-card-text v-if="!!mentions.articles">
+          This article is not @mentioned anywhere.
+        </v-card-text>
+        <v-list v-else>
+          <v-list-item
+            v-for="(article, i) in mentions.articles"
+            :key="i"
+            @click="mentions.dialog = false; loadArticle(article.id)">
+            <v-list-item-avatar>
+              <v-icon>fas fa-{{ article.icon }}</v-icon>
+            </v-list-item-avatar>
+
+            <v-list-item-content>
+              <v-list-item-title>{{ article.name }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            color="primary"
+            text
+            @click="mentions.dialog = false">
+            Close
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     
     <v-dialog
       v-model="deleting.dialog"
@@ -304,6 +346,10 @@
       image: {
         dialog: false
       },
+      mentions: {
+        dialog: false,
+        articles: []
+      },
       deleting: {
         dialog: false,
         loading: false,
@@ -363,6 +409,13 @@
       },
       async 'article.image'(val) {
         this.articleImage = (val ? await this.$store.dispatch('getResource', val) : null);
+      },
+      async 'mentions.dialog'(val) {
+        if(!val) return;
+
+        this.mentions.articles = [];
+
+        this.mentions.articles = await this.$store.dispatch('getArticleMentions', this.article.id);
       },
 
       async active(vals) {

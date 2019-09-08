@@ -31,7 +31,9 @@
         <v-row class="mx-0 transparent-bg" no-gutters>
             <v-col v-for="[icon, name] in [['map', 'Map'], ['list', 'Mentions'], ['history', 'History']]" :key="icon"
                     cols="4">
-                <v-btn text block tile :height="64">
+                <v-btn text block tile :height="64"
+                    :disabled="!article.id"
+                    @click="$emit(name.toLowerCase())">
                     <div>
                     <v-icon small>fas fa-{{ icon }}</v-icon>
                     <div class="mt-2 overline">{{ name }}</div>
