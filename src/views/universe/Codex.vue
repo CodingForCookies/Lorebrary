@@ -165,7 +165,7 @@
           Mentioned in:
         </v-card-title>
 
-        <v-card-text v-if="!!mentions.articles">
+        <v-card-text v-if="!mentions.articles">
           This article is not @mentioned anywhere.
         </v-card-text>
         <v-list v-else>
