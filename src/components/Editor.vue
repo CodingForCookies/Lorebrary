@@ -355,7 +355,6 @@
           }
         }
 
-        // this.editor.setContent(val);
         this.editor.setContent({
           type: 'doc',
           content: val.content
