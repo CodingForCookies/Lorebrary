@@ -162,7 +162,13 @@ export class BrowserStore extends Store {
         return new Promise(resolve => {
             this.articles.find({
                 universe, id
-            }, { id: 1, type: 1, icon: 1, name: 1, tags: 1 }, (err, result2) => {
+            }, {
+                id: 1,
+                type: 1,
+                icon: 1,
+                name: 1,
+                tags: 1
+            }, (err, result2) => {
                 resolve(result);
             });
         });
