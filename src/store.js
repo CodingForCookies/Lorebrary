@@ -167,7 +167,9 @@ export default new Vuex.Store({
         image: article.image,
         name: article.name,
         tags: article.tags,
-        content: article.content
+        
+        content: article.content,
+        mentions: article.mentions
       });
     }, async deleteArticle({ commit, state, getters }, opts) {
       opts = opts || {};
@@ -175,6 +177,12 @@ export default new Vuex.Store({
       console.debug('deleteArticle', opts);
 
       await getters.driver.getStore().deleteArticle(state.universeSelected, opts);
+    },
+
+    async getArticleMentions({ commit, state, getters }, id) {
+      console.debug('getArticleMentions', id);
+
+      return await getters.driver.getStore().getArticleMentions(state.universeSelected, id);
     },
 
 

@@ -145,12 +145,25 @@
   
   import tippy from 'tippy.js';
 
+  function* forEach(content, func) {
+    let nodes = [...content];
+    while(nodes.length > 0) {
+      let node = nodes.shift();
+
+      yield node;
+
+      // A node contents (children) to the node search list.
+      if(node.content)
+        nodes.push(...node.content);
+    }
+  }
+
   export default {
     components: {
       EditorMenuBubble,
       EditorContent,
     },
-    props: ['minHeight', 'readonly', 'value'],
+    props: ['minHeight', 'readonly', 'value', 'mentions'],
     data() {
       return {
         ignoreUpdate: false,
@@ -159,6 +172,8 @@
         
         linkUrl: null,
         linkMenuIsActive: false,
+
+        ignoreMentionChange: false,
 
         editor: new Editor({
           extensions: [
@@ -242,9 +257,22 @@
             this.ignoreUpdate = true;
             this.$nextTick(() => this.ignoreUpdate = false);
 
-            const state = getJSON();
-            //this.$emit('input', state);
-            this.$emit('input', state.content);
+            let content = getJSON().content;
+
+            // Below, we extract all mentions and output them separately.
+            let mentions = [];
+
+            // Loops through the entire nested node array without causing overflows            
+            for(let node of forEach(content)) {
+              if(node.type == 'mention') {
+                mentions.push({ id: node.attrs.id, label: node.attrs.label });
+              }
+            }
+            
+            this.$emit('input', {
+              content,
+              mentions
+            });
           }
         }),
         
@@ -280,13 +308,7 @@
         });
       },
       value(val) {
-        if(this.ignoreUpdate) return;
-
-        // this.editor.setContent(val);
-        this.editor.setContent({
-          type: 'doc',
-          content: val
-        });
+        this.setContent(val);
       },
 
       async 'suggestions.query'(val) {
@@ -317,6 +339,29 @@
       }
     },
     methods: {
+      setContent(val) {
+        if(this.ignoreUpdate) return;
+
+        if(val.mentions) {        
+          let mentions = { };
+          for(let ment of val.mentions) {
+            mentions[ment.id] = ment;
+          }
+
+          for(let node of forEach(val.content)) {
+            if(node.type == 'mention') {
+              node.attrs.label = mentions[node.attrs.id].label;
+            }
+          }
+        }
+
+        // this.editor.setContent(val);
+        this.editor.setContent({
+          type: 'doc',
+          content: val.content
+        });
+      },
+
       showLinkMenu(attrs) {
         this.linkUrl = attrs.href
         this.linkMenuIsActive = true
@@ -402,10 +447,7 @@
       }
     },
     mounted() {
-      this.editor.setContent({
-        type: 'doc',
-        content: this.value
-      });
+      this.setContent(this.value);
 
       this.editor.setOptions({
         editable: this.isEditable,

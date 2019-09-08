@@ -51,7 +51,7 @@ export class Driver {
 
 export class Store {
     /**
-     * This should return all universes, but only their { id, name, description }.
+     * This should return all universes, but only their Universe{ id, name, description }.
      */
     async getUniverses() { return []; }
     
@@ -64,7 +64,7 @@ export class Store {
     /**
      * args: { type, search }
      * Returns the articles that are a child of the defined parent. If parent is null, return all articles with no parent.
-     * This should return { id, icon, name, tags, children? }.
+     * This should return Article{ id, icon, name, tags, children? }.
      */
     async getArticles(universe, opts) { return null; }
     
@@ -80,8 +80,12 @@ export class Store {
     async deleteArticle(universe, opts) { }
 
     /**
-     * Return all resources of { type }. Resources are not expected to return the full content in this array. Image resources
-     * should return a smaller { blob } preview if it's stored internally to lower network usage.
+     * Return all Article{ id, icon, name } that directly reference the passed article ID.
+     */
+    async getArticleMentions(universe, id) { return null; }
+
+    /**
+     * Return all resources of Resource{ type }. Resources are not expected to return the full content in this array.
      */
     async getResources(universe, opts) { }
 
@@ -101,8 +105,6 @@ export class Store {
 // TODO: Allow creating multiple credentials for a single driver. i.e. store two universes in two different google drive accounts.
 export default {
     online: new (require('./drivers/online').default)('online'),
-    google: new (require('./drivers/google').default)('google'),
-    dropbox: new (require('./drivers/dropbox').default)('dropbox'),
     drive: new (require('./drivers/drive').default)('drive'),
     browser: new (require('./drivers/browser').default)('browser')
 }

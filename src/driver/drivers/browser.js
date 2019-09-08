@@ -84,15 +84,51 @@ export class BrowserStore extends Store {
     }
     
     getArticle(universe, id) {
-        return new Promise(resolve => this.articles.findOne({ universe, id }, (err, result) => resolve(result)));
+        return new Promise(resolve => {
+            this.articles.findOne({ universe, id }, (err, result) => {
+                if(!result.mentions) {
+                    return resolve(result);
+                }
+                
+                let mentions = {};
+                for(let ment of result.mentions) {
+                    mentions[ment.id] = ment;
+                }
+
+                // Update the mentions. This could be done on article save, however since
+                // we don't care too much about queries, as they're pretty much instant,
+                // just do it here.
+                this.articles.find({
+                    $or: result.mentions.map(v => ({ id: v.id }))
+                }, { id: 1, name: 1 }, (err, result2) => {
+                    for(let article of result2) {
+                        mentions[article.id].label = article.name;
+                    }
+
+                    resolve(result);
+                });
+            });
+        });
     }
 
     async saveArticle(universe, article) {
-        this.articles.update({ universe, id: article.id }, {
-            ...{ universe },
-            ...article
-        }, {
-            upsert: true
+        return new Promise(resolve => {
+            this.articles.update({ universe, id: article.id }, {
+                ...{ universe },
+                ...article
+            }, {
+                upsert: true
+            }, (err) => {
+                resolve();
+                // Update all articles that mention this one
+
+                // The library we use doesn't allow easily doing this in a single query. However,
+                // since we're doing it locally, speed and efficiency doesn't matter much.
+
+                this.articles.find({
+                    'mentions.id': article.id
+                }, { id: 1, name: 1 })
+            });
         });
     }
 
@@ -120,6 +156,16 @@ export class BrowserStore extends Store {
 
             await Promise.all(promises);
         }
+    }
+    
+    async getArticleMentions(universe, id) {
+        return new Promise(resolve => {
+            this.articles.find({
+                universe, id
+            }, { id: 1, type: 1, icon: 1, name: 1, tags: 1 }, (err, result2) => {
+                resolve(result);
+            });
+        });
     }
 
     

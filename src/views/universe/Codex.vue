@@ -16,8 +16,7 @@
           <v-row no-gutters>
             <v-col v-for="([icon, name], id) in types" :key="icon">
               <v-btn text block tile :height="64" @click="type = id"
-                  :to="{ name: 'Codex', params: { universe: $route.params.universe, type: id }}"
-                  exact>
+                  :to="{ name: 'Codex', params: { universe: $route.params.universe, type: id }}">
                 <div class="text-center">
                   <v-icon small>fas fa-{{ icon }}</v-icon>
                   <div class="mt-2 overline">{{ name }}</div>
@@ -97,7 +96,7 @@
             <editor v-else
               ref="editor"
               class="pa-4"
-              v-model="article.content"
+              v-model="articleData"
               :readonly="!isEditing"
               @mention="loadArticle"
               min-height="350" />
@@ -317,6 +316,19 @@
     computed: {
       isEditing() {
         return this.active.length == 0 || !!this.editing;
+      },
+
+      articleData: {
+        get() {
+          return {
+            content: this.article.content,
+            mentions: this.article.mentions
+          }
+        },
+        set(val) {
+          this.article.content = val.content;
+          this.article.mentions = val.mentions;
+        }
       }
     },
 
@@ -325,7 +337,11 @@
         if(val == oldVal) return;
 
         this.reloadCodex();
-        this.newArticle();
+        
+        if(this.$route.params.article) {
+          this.loadArticle(this.$route.params.article);
+        }else
+          this.newArticle();
       },
       '$route.params.article'(val) {
         if(this.article.id == val) return;
@@ -357,15 +373,21 @@
           return;
         }
         
+        this.ignoreChanges = true;
+
         this.articleParent = null;
         
         this.article = await this.$store.dispatch('getArticle', vals[0]);
 
-        if(this.article)
+        if(this.article) {
           this.$router.push({ name: 'Codex', params: Object.assign(this.$route.params, { type: this.article.type, article: this.article.id }) });
-        else{
+        }else{
           this.newArticle();
         }
+        
+        setTimeout(() => {
+          this.ignoreChanges = false;
+        }, 1);
       }
     },
 
@@ -429,7 +451,9 @@
           icon: 'box',
           name: '',
           tags: [],
-          content: []
+
+          content: [],
+          mentions: []
         };
         this.articleParent = parent;
         
@@ -488,10 +512,6 @@
       }
       
       this.type = this.$route.params.type;
-
-      if(this.$route.params.article) {
-        this.loadArticle(this.$route.params.article);
-      }
     }
   }
 </script>
