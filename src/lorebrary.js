@@ -103,7 +103,7 @@ export class Article extends Entry {
     constructor(opts) {
         super(opts);
 
-        this.category = opts.category || null;
+        this.type = opts.type || null;
         this.parent = opts.parent || null;
         
         this.icon = opts.icon || 'box';
@@ -117,7 +117,7 @@ export class Article extends Entry {
         return {
             ...super.toObject(),
             ...{
-                type: 'article',
+                type: this.type,
 
                 category: this.category,
                 parent: this.parent,
