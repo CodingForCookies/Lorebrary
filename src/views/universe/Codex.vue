@@ -526,7 +526,7 @@
       newArticle(parent) {
         this.ignoreChanges = true;
 
-        this.article = new (this.$lb.Article)({ type: this.type });
+        this.article = new (this.$lb.Article)({ type: this.type, parent });
         this.articleParent = parent;
         
         this.active = [];
