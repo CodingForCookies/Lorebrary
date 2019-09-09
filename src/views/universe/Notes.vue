@@ -25,7 +25,13 @@
 
             <v-divider />
 
-            <v-list-item v-for="(note, id) of notes" :key="id"
+            <v-list-item v-if="Object.keys(notes).length == 0">
+              <v-list-item-content>
+                <small>You have made no notes</small>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item v-else
+              v-for="(note, id) of notes" :key="id"
               @click="selected = id">
               <v-list-item-content>
                 <v-list-item-title>{{ note.name }}</v-list-item-title>
