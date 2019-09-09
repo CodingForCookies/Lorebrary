@@ -1,14 +1,6 @@
 <template>
   <v-container fluid fill-height no-gutters class="pa-0">
-    <v-row v-if="!codex"
-        class="my-4 text-center">
-      <v-progress-circular
-        :size="32"
-        :width="2"
-        color="primary"
-        indeterminate />
-    </v-row>
-    <v-row v-else
+    <v-row
         no-gutters
         class="fill-height">
       <v-col cols="12" md="4" lg="3">
@@ -36,13 +28,20 @@
 
           <v-divider />
 
-          <v-card-text>
+          <v-card-text v-if="!articles"
+              class="text-center">
+            <v-progress-circular
+              :size="32"
+              :width="2"
+              indeterminate />
+          </v-card-text>
+          <v-card-text v-else>
             <v-treeview style="cursor:pointer"
               :search="search.text"
               :filter="filterTree"
               :active.sync="active"
               :open.sync="open"
-              :items="codex"
+              :items="articles"
               v-model="tree"
               item-key="id"
               hoverable
@@ -62,81 +61,95 @@
           </v-card-text>
         </v-card>
       </v-col>
-      <v-col cols="12" md="8" lg="6">
-        <v-card light flat tile class="fill-height">
-          <v-col
-              class="fill-height">
-            <v-card-title>
-              <v-text-field
-                class="display-1"
-                placeholder="Title"
-                v-model="article.name"
-                single-line
-                full-width
-                :readonly="!isEditing"
-                :hide-details="!article || !article.parent"
-                :hint="article.parent ? 'Child of \'' + (articleParent || codexMap[article.parent]).name + '\'' : null"
-                persistent-hint>
-                <template v-slot:prepend>
-                  <v-icon>
-                    fas fa-{{ article.icon }}
-                  </v-icon>
-                </template>
-              </v-text-field>
-            </v-card-title>
+      <template v-if="!article">
+        <v-col cols="12" md="8" lg="9">
+          <v-row align="center" justify="center" class="fill-height">
+            <v-progress-circular
+              :size="64"
+              :width="4"
+              color="primary"
+              indeterminate />
+          </v-row>
+        </v-col>
+      </template>
+      <template v-else>
+        <v-col cols="12" md="8" lg="6">
+          <v-card light flat tile class="fill-height">
+            <v-col
+                class="fill-height">
+              <v-card-title>
+                <v-text-field
+                  class="display-1"
+                  placeholder="Title"
+                  v-model="article.name"
+                  single-line
+                  full-width
+                  :readonly="saving || !isEditing"
+                  :hide-details="!article || !article.parent"
+                  :hint="article.parent ? 'Child of \'' + (articleParent || articleMap[article.parent]).name + '\'' : null"
+                  persistent-hint>
+                  <template v-slot:prepend>
+                    <v-icon>
+                      fas fa-{{ article.icon }}
+                    </v-icon>
+                  </template>
+                </v-text-field>
+              </v-card-title>
 
-            <v-card-text v-if="!article.content" class="my-4 text-center">
-              <v-progress-circular
-                :size="32"
-                :width="2"
-                color="primary"
-                indeterminate />
-            </v-card-text>
+              <v-card-text v-if="!article.content" class="my-4 text-center">
+                <v-progress-circular
+                  :size="32"
+                  :width="2"
+                  color="primary"
+                  indeterminate />
+              </v-card-text>
 
-            <editor v-else
-              ref="editor"
-              class="pa-4"
-              v-model="articleData"
-              :readonly="!isEditing"
-              @mention="loadArticle"
-              min-height="350" />
+              <editor v-else
+                ref="editor"
+                class="pa-4"
+                v-model="article"
+                :readonly="saving || !isEditing"
+                allow-mentions
+                @mention="loadArticle"
+                min-height="350" />
 
-            <v-btn v-if="this.active.length > 0"
-              absolute
-              top right
-              min-width="60"
-              min-height="60"
-              dark depressed tile
-              :ripple="false"
-              @click="toggleEditing">
-              <v-icon>fas fa-{{ isEditing ? 'eye' : 'pencil-alt' }}</v-icon>
-            </v-btn>
-          </v-col>
-        </v-card>
-      </v-col>
-      <v-navigation-drawer
-        v-model="$store.state.window.rightDrawer"
-        absolute right
-        temporary>
-        <article-info
-            :is-editing="isEditing"
-            :article="article"
-            :article-image="articleImage"
-            @image="image.dialog = true"
-            @mentions="mentions.dialog = true"
-            @delete="deleting.dialog = true" />
-      </v-navigation-drawer>
-      <v-col lg="3" class="d-none d-lg-block">
-        <v-card flat tile :color="$vuetify.theme.dark ? 'blue-grey darken-4' : 'rgba(0, 0, 0, .07)'" class="fill-height">
+              <v-btn v-if="this.active.length > 0"
+                absolute
+                top right
+                min-width="60"
+                min-height="60"
+                dark depressed tile
+                :ripple="false"
+                @click="toggleEditing">
+                <v-icon>fas fa-{{ isEditing ? 'eye' : 'pencil-alt' }}</v-icon>
+              </v-btn>
+            </v-col>
+          </v-card>
+        </v-col>
+        <v-navigation-drawer
+          v-model="$store.state.window.rightDrawer"
+          absolute right
+          temporary>
           <article-info
-            :is-editing="isEditing"
-            :article="article"
-            :article-image="articleImage"
-            @image="image.dialog = true"
-            @mentions="mentions.dialog = true"
-            @delete="deleting.dialog = true" />
-        </v-card>
-      </v-col>
+              :is-editing="!saving && isEditing"
+              :article="article"
+              :article-image="articleImage"
+              @image="image.dialog = true"
+              @mentions="mentions.dialog = true"
+              @delete="deleting.dialog = true" />
+        </v-navigation-drawer>
+        <v-col lg="3" class="d-none d-lg-block">
+          <v-card flat tile :color="$vuetify.theme.dark ? 'blue-grey darken-4' : 'rgba(0, 0, 0, .07)'" class="fill-height">
+            <article-info
+              :is-editing="!saving && isEditing"
+              :article="article"
+              :article-image="articleImage"
+              @image="image.dialog = true"
+              @mentions="mentions.dialog = true"
+              @delete="deleting.dialog = true" />
+          </v-card>
+        </v-col>
+      </template>
     </v-row>
 
     <v-snackbar
@@ -144,7 +157,10 @@
       bottom
       :timeout="0">
       You have unsaved changes!
-      <v-btn dark text color="primary" @click="saveArticle">
+      <v-btn
+        dark text color="primary"
+        :loading="saving"
+        @click="saveArticle">
         Save
       </v-btn>
     </v-snackbar>
@@ -156,6 +172,7 @@
       selection />
     
     <v-dialog
+      v-if="article"
       v-model="mentions.dialog"
       width="500">
       <v-card v-if="!!article">
@@ -196,6 +213,7 @@
     </v-dialog>
     
     <v-dialog
+      v-if="article"
       v-model="deleting.dialog"
       :persistent="deleting.loading"
       width="500">
@@ -271,8 +289,8 @@
       tree: [],
       open: [],
 
-      codexMap: { },
-      codex: null, /*[
+      articleMap: { },
+      articles: null, /*[
         {
           id: 'cities',
           name: 'Cities',
@@ -330,19 +348,12 @@
         }
       ],*/
 
-      article: {
-        type: 'other',
-        parent: null,
-
-        icon: 'box',
-        name: '',
-        tags: [],
-        content: []
-      },
+      article: null,
       articleImage: null,
       articleParent: null,
 
       editing: false,
+      saving: false,
       image: {
         dialog: false
       },
@@ -362,42 +373,28 @@
     computed: {
       isEditing() {
         return this.active.length == 0 || !!this.editing;
-      },
-
-      articleData: {
-        get() {
-          return {
-            content: this.article.content,
-            mentions: this.article.mentions
-          }
-        },
-        set(val) {
-          this.article.content = val.content;
-          this.article.mentions = val.mentions;
-        }
       }
     },
 
     watch: {
-      type(val, oldVal) {
+      // If the type changes, refresh the sidebar with the new items
+      async type(val, oldVal) {
         if(val == oldVal) return;
 
-        this.reloadCodex();
+        await this.reloadArticles();
         
+        // If an article is selected, go to it.
         if(this.$route.params.article) {
-          this.loadArticle(this.$route.params.article);
+          await this.loadArticle(this.$route.params.article);
         }else
+          // Otherwise, reset the article editor.
           this.newArticle();
       },
+
+      // If the article parameter changes, load the new article.
       '$route.params.article'(val) {
         if(this.article.id == val) return;
         this.loadArticle(val);
-      },
-
-      'deleting.dialog'(val) {
-        if(val) {
-          this.deleting.loading = false;
-        }
       },
 
       article: {
@@ -408,14 +405,20 @@
         }
       },
       async 'article.image'(val) {
-        this.articleImage = (val ? await this.$store.dispatch('getResource', val) : null);
+        this.articleImage = (val ? await this.$lb.Resource.get({ id: val }) : null);
+      },
+
+      'deleting.dialog'(val) {
+        if(val) {
+          this.deleting.loading = false;
+        }
       },
       async 'mentions.dialog'(val) {
         if(!val) return;
 
         this.mentions.articles = [];
 
-        this.mentions.articles = await this.$store.dispatch('getArticleMentions', this.article.id);
+        this.mentions.articles = await this.article.getMentionedIn();
       },
 
       async active(vals) {
@@ -425,22 +428,8 @@
           this.newArticle();
           return;
         }
-        
-        this.ignoreChanges = true;
 
-        this.articleParent = null;
-        
-        this.article = await this.$store.dispatch('getArticle', vals[0]);
-
-        if(this.article) {
-          this.$router.push({ name: 'Codex', params: Object.assign(this.$route.params, { type: this.article.type, article: this.article.id }) });
-        }else{
-          this.newArticle();
-        }
-        
-        setTimeout(() => {
-          this.ignoreChanges = false;
-        }, 1);
+        this.loadArticle(vals[0]);
       }
     },
 
@@ -463,28 +452,6 @@
         this.ignoreChanges = false;
       },*/
 
-      async loadArticle(id) {
-        this.active = [ id ];
-      },
-
-      async reloadCodex() {
-        let dict = await this.$store.dispatch('getArticles', { type: this.type });
-
-        this.codexMap = dict;
-        this.codex = [];
-        
-        // Merge the lists
-        for(let [id, article] of Object.entries(dict)) {
-          if(!article.parent) {
-            this.codex.push(article);
-          }else{
-            let parent = dict[article.parent];
-            if(!parent.children) parent.children = [];
-            parent.children.push(article);
-          }
-        }
-      },
-
       toggleEditing(e) {
         this.editing = !this.editing;
 
@@ -494,20 +461,61 @@
         });
       },
 
+      async loadArticle(id) {
+        this.ignoreChanges = true;
+
+        this.article = null;
+
+        // Update the active tree item
+        this.active = id ? [ id ] : [ ];
+
+        this.articleParent = null;
+        
+        this.article = await this.$lb.Article.get({ id });
+
+        if(this.article) {
+          this.$router.push({ name: 'Codex', params: Object.assign(this.$route.params, { type: this.article.type, article: this.article.id }) });
+        }else{
+          this.newArticle();
+        }
+        
+        setTimeout(() => {
+          this.ignoreChanges = false;
+        }, 1);
+      },
+
+      async reloadArticles(inPlaceReload) {
+        if(!inPlaceReload) {
+          this.articles = null;
+          this.article = null;
+        }
+
+        let articles = await this.$lb.Article.find({ type: this.type });
+
+        this.articleMap = { };
+
+        for(let article of articles) {
+          this.articleMap[article.id] = article;
+        }
+
+        this.articles = [];
+        
+        // Merge the lists
+        for(let [id, article] of Object.entries(this.articleMap)) {
+          if(!article.parent) {
+            this.articles.push(article);
+          }else{
+            let parent = this.articleMap[article.parent];
+            if(!parent.children) parent.children = [];
+            parent.children.push(article);
+          }
+        }
+      },
+
       newArticle(parent) {
         this.ignoreChanges = true;
 
-        this.article = {
-          type: this.type,
-          parent: parent ? parent.id : null,
-          
-          icon: 'box',
-          name: '',
-          tags: [],
-
-          content: [],
-          mentions: []
-        };
+        this.article = new (this.$lb.Article)({ type: this.type });
         this.articleParent = parent;
         
         this.active = [];
@@ -520,18 +528,19 @@
       },
       async saveArticle() {
         this.ignoreChanges = true;
+        this.saving = true;
 
         let isNew = this.active.length == 0;
 
         if(isNew) {
-          // this.codex = null;
+          // this.articles = null;
         }
         
-        await this.$store.dispatch('saveArticle', this.article);
+        await this.article.save();
 
         // Refresh the list
         // TODO: only refresh when adding. We do this for now so that titles and icons will update correctly.
-        await this.reloadCodex();
+        await this.reloadArticles(true);
 
         this.active = [ this.article.id ];
 
@@ -540,6 +549,7 @@
           this.editing = true;
         }
 
+        this.saving = false;
         this.unsaved = false;
 
         setTimeout(() => {
@@ -549,14 +559,14 @@
       async deleteArticle() {
         this.deleting.loading = true;
         
-        await this.$store.dispatch('deleteArticle', { id: this.article.id, retainChildren: !this.deleting.children });
+        await this.article.delete({ retainChildren: !this.deleting.children });
 
         // Refresh the list
-        await this.reloadCodex();
+        await this.reloadArticles(true);
 
         this.deleting.dialog = false;
 
-        await this.newArticle();
+        this.newArticle();
       }
     },
     mounted() {

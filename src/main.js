@@ -34,20 +34,15 @@ Vue.use(VueAnalytics, {
 
 Vue.config.productionTip = false;
 
+import * as lorebrary from './lorebrary';
+
 import './messaging';
 import drivers from './driver/';
 
-Vue.prototype.$drivers = drivers;
-
 Vue.component('app-footer', require('./components/Footer.vue').default);
 
-/*Vue.mixin({
-  computed: {
-    $driver: {
-      get() { return store.getters.driver; }
-    }
-  }
-})*/
+Vue.prototype.$lb = lorebrary;
+Vue.prototype.$drivers = drivers;
 
 new Vue({
   router,

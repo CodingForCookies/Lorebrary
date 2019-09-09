@@ -99,7 +99,8 @@
     <editor-content ref="input" class="editor__content" :editor="editor"
       :style="minHeight ? 'min-height:' + minHeight + 'px' : undefined" />
     
-    <div class="suggestion-list" v-show="showSuggestions" ref="suggestions">
+    <div v-if="allowMentions"
+        class="suggestion-list" v-show="showSuggestions" ref="suggestions">
       <template v-if="hasResults">
         <div
           v-for="(item, index) in suggestions.items"
@@ -163,7 +164,7 @@
       EditorMenuBubble,
       EditorContent,
     },
-    props: ['minHeight', 'readonly', 'value', 'mentions'],
+    props: ['minHeight', 'readonly', 'value', 'allowMentions'],
     data() {
       return {
         ignoreUpdate: false,
@@ -175,6 +176,7 @@
 
         ignoreMentionChange: false,
 
+        article: null,
         editor: new Editor({
           extensions: [
             new Blockquote(),
@@ -197,7 +199,7 @@
               notAfter: ['paragraph'],
             }),
 
-            new Mention({
+            ...(this.allowMentions !== false ? [new Mention({
               // is called when a suggestion starts
               onEnter: ({ items, query, range, command, virtualNode, }) => {
                 this.suggestions.virtualNode = virtualNode;
@@ -250,7 +252,7 @@
 
                 return false;
               }
-            })
+            })] : [])
           ],
           content: '',
           onUpdate: ({ getJSON }) => {
@@ -268,11 +270,11 @@
                 mentions.push({ id: node.attrs.id, label: node.attrs.label });
               }
             }
+
+            this.article.content = content;
+            this.article.mentions = mentions;
             
-            this.$emit('input', {
-              content,
-              mentions
-            });
+            this.$emit('input', this.article);
           }
         }),
         
@@ -303,12 +305,35 @@
     },
     watch: {
       isEditable(val) {
+        console.log(val);
         this.editor.setOptions({
           editable: val
         });
       },
+
       value(val) {
-        this.setContent(val);
+        this.article = val;
+      },
+      article(val) {
+        if(this.ignoreUpdate) return;
+
+        if(val.mentions) {        
+          let mentions = { };
+          for(let ment of val.mentions) {
+            mentions[ment.id] = ment;
+          }
+
+          for(let node of forEach(val.content)) {
+            if(node.type == 'mention' && mentions[node.attrs.id]) {
+              node.attrs.label = mentions[node.attrs.id].label;
+            }
+          }
+        }
+
+        this.editor.setContent({
+          type: 'doc',
+          content: val.content
+        });
       },
 
       async 'suggestions.query'(val) {
@@ -327,40 +352,18 @@
         // If the query is not the same, bail.
         if(this.suggestions.query != val) return;
 
-        let result = await this.$store.dispatch('getArticles', { search: val });
+        let articles = await this.$lb.Article.find({ search: val });
 
         // If the popup is gone, ignore the result. :(
         if(this.suggestions.navigatedIndex == null) return;
 
-        this.suggestions.items = Object.values(result);
+        this.suggestions.items = Object.values(articles);
 
         // Update the popup
         this.renderPopup();
       }
     },
     methods: {
-      setContent(val) {
-        if(this.ignoreUpdate) return;
-
-        if(val.mentions) {        
-          let mentions = { };
-          for(let ment of val.mentions) {
-            mentions[ment.id] = ment;
-          }
-
-          for(let node of forEach(val.content)) {
-            if(node.type == 'mention') {
-              node.attrs.label = mentions[node.attrs.id].label;
-            }
-          }
-        }
-
-        this.editor.setContent({
-          type: 'doc',
-          content: val.content
-        });
-      },
-
       showLinkMenu(attrs) {
         this.linkUrl = attrs.href
         this.linkMenuIsActive = true
@@ -446,7 +449,7 @@
       }
     },
     mounted() {
-      this.setContent(this.value);
+      this.article = this.value;
 
       this.editor.setOptions({
         editable: this.isEditable,

@@ -1,15 +1,15 @@
 <template>
-    <v-card>
+    <v-card v-if="!!universe">
         <v-text-field
             label="Universe Name"
-            v-model="name"
+            v-model="universe.name"
             filled
             hide-details />
 
         <v-card-text class="pt-4 pb-0">
             <v-textarea
                 label="Description"
-                v-model="description"
+                v-model="universe.description"
                 outlined />
 
             <v-select
@@ -17,11 +17,10 @@
                 :items="Object.values(this.$drivers)"
                 item-value="id"
                 item-text="name"
-                v-model="driver"
+                v-model="universe.driver"
                 :item-disabled="isDisabled"
                 :append-icon="driver ? driver.icon : ''"
                 outlined
-                return-object
                 hide-details>
                 <!--<template v-slot:prepend-item="data">
                 <v-icon small>fas fa-{{ $drivers[data.item.driver].icon }}</v-icon>
@@ -37,7 +36,7 @@
                 </template>
             </v-select>
 
-            <v-list dense v-if="driver">
+            <v-list dense v-if="universe.driver">
                 <template v-for="[type, color, icon] in [['good', 'success', 'check'], ['bad', 'error', 'times']]">
                     <v-list-item v-for="(text, j) in driver.info[type]" :key="type + '-' + j">
                         <v-icon small :color="color" class="mr-3" style="width:32px">
@@ -56,7 +55,7 @@
                 color="success"
                 text
                 :loading="$store.state.universeLoading"
-                :disabled="name.length == 0 || driver == null"
+                :disabled="universe.name.length == 0 || universe.driver == null"
                 @click="create">
                 Create Universe
             </v-btn>
@@ -67,33 +66,34 @@
 <script>
     export default {
         data: () => ({
-            driver: null,
-            name: '',
-            description: ''
+            universe: null
         }),
         watch: {
-            // Watch for changes in the universe list. When it's changed, then the universe was created.
-            '$store.state.universes'() {
-                this.$emit('created');
+            'universe.driver'(val) {
+                this.driver = this.$drivers[val];
             }
         },
         methods: {
             isDisabled(item) {
                 return !item.isAccessible();
             },
-            create() {
+            async create() {
                 if(this.$store.state.universeLoading) return;
 
                 this.$store.state.universeLoading = true;
 
-                this.$store.dispatch('saveUniverse', {
-                    driver: this.driver.id,
-                    name: this.name,
-                    description: this.description
-                }).then(() => {
-                    this.$store.state.universeLoading = false;
-                });
+                await this.universe.save();
+
+                this.$set(this.$store.state.universes, this.universe.id, this.universe);
+
+                this.$store.state.universeLoading = false;
+
+                this.$emit('created');
             }
+        },
+        mounted() {
+            this.universe = new (this.$lb.Universe)();
+            console.log(this.universe);
         }
     }
 </script>

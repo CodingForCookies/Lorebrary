@@ -1,4 +1,5 @@
 import { Driver, Store } from '../index';
+import { rejects } from 'assert';
 
 const Datastore = require('nedb');
 
@@ -35,11 +36,17 @@ export class BrowserStore extends Store {
     }
 
     getUniverse(id) {
-        return new Promise(resolve => this.universes.findOne({ }, (err, result) => resolve(result)));
+        return new Promise(resolve => this.universes.findOne({ id }, (err, result) => {
+            if(!result) return resolve(null);
+
+            resolve(result);
+        }));
     }
 
-    async saveUniverse(id, data) {
-        this.universes.update({ id }, data, {
+    async saveUniverse(universe) {
+        this.universes.update({
+            id: universe.id
+        }, universe, {
             upsert: true
         });
     }
@@ -48,17 +55,14 @@ export class BrowserStore extends Store {
         this.universes.remove({ id });
     }
 
-    getArticles(universe, opts) {
+    getArticles(opts) {
         if(opts.search !== undefined) {
             opts.name = new RegExp(escapeRegex(opts.search), 'gi');
             delete opts.search;
         }
 
         return new Promise(resolve => {
-            this.articles.find({
-                ...{ universe },
-                ...opts
-            }, {
+            this.articles.find(opts, {
                 id: 1,
                 type: 1,
                 icon: 1,
@@ -77,15 +81,17 @@ export class BrowserStore extends Store {
                             articles[article.parent].children = [];
                     }
 
-                    resolve(articles);
+                    resolve(result);
                 });
             });
         });
     }
     
-    getArticle(universe, id) {
-        return new Promise(resolve => {
-            this.articles.findOne({ universe, id }, (err, result) => {
+    getArticle(opts) {
+        return new Promise((resolve, reject) => {
+            this.articles.findOne(opts, (err, result) => {
+                if(!result) return resolve(null);
+
                 if(!result.mentions) {
                     return resolve(result);
                 }
@@ -99,7 +105,7 @@ export class BrowserStore extends Store {
                 // we don't care too much about queries, as they're pretty much instant,
                 // just do it here.
                 this.articles.find({
-                    universe,
+                    universe: result.universe,
                     $or: result.mentions.map(v => ({ id: v.id }))
                 }, { id: 1, name: 1 }, (err, result2) => {
                     for(let article of result2) {
@@ -112,12 +118,12 @@ export class BrowserStore extends Store {
         });
     }
 
-    async saveArticle(universe, article) {
+    async saveArticle(article) {
         return new Promise(resolve => {
-            this.articles.update({ universe, id: article.id }, {
-                ...{ universe },
-                ...article
-            }, {
+            this.articles.update({
+                universe: article.universe,
+                id: article.id
+            }, article, {
                 upsert: true
             }, (err) => {
                 resolve();
@@ -125,12 +131,12 @@ export class BrowserStore extends Store {
         });
     }
 
-    async deleteArticle(universe, opts) {
+    async deleteArticle(opts) {
         if(opts.retainChildren) {
-            let article = await this.getArticle(universe, opts.id);
+            let article = await this.getArticle(opts);
 
-            this.articles.remove({ universe, id: opts.id });
-            this.articles.update({ universe, parent: opts.id }, {
+            this.articles.remove(opts);
+            this.articles.update({ universe: opts.universe, parent: opts.id }, {
                 $set: {
                     parent: article.parent
                 }
@@ -138,24 +144,28 @@ export class BrowserStore extends Store {
         }else{
             let promises = [];
 
-            let children = await this.getArticles(universe, opts.id);
+            let children = await this.getArticles(opts);
 
             // Remove all children. This is recursive.
             for(let child of children) {
-                promises.push(await this.deleteArticle(universe, { id: child.id, retainChildren: false }));
+                promises.push(await this.deleteArticle({
+                    universe: opts,
+                    id: child.id,
+                    retainChildren: false
+                }));
             }
             
-            this.articles.remove({ universe, id: opts.id });
+            this.articles.remove(opts);
 
             await Promise.all(promises);
         }
     }
     
-    async getArticleMentions(universe, id) {
+    async getArticleMentions(opts) {
         return new Promise(resolve => {
             this.articles.find({
-                universe,
-                'mentions.id': id
+                universe: opts.universe,
+                'mentions.id': opts.id
             }, {
                 id: 1,
                 type: 1,
@@ -169,17 +179,14 @@ export class BrowserStore extends Store {
     }
 
     
-    getResources(universe, opts) {
+    getResources(opts) {
         if(opts.search !== undefined) {
             opts.name = new RegExp(escapeRegex(opts.search), 'gi');
             delete opts.search;
         }
 
         return new Promise(resolve => {
-            this.resources.find({
-                ...{ universe },
-                ...opts
-            }, (err, result) => {
+            this.resources.find(opts, (err, result) => {
                 let resources = { };
                 for(let resource of result) {
                     resources[resource.id] = resource;
@@ -189,21 +196,25 @@ export class BrowserStore extends Store {
         });
     }
 
-    getResource(universe, id) {
-        return new Promise(resolve => this.resources.findOne({ universe, id }, (err, result) => resolve(result)));
+    getResource(opts) {
+        return new Promise(resolve => this.resources.findOne(opts, (err, result) => {
+            if(!result) return resolve(null);
+
+            resolve(result);
+        }));
     }
 
-    async saveResource(universe, resource) {
-        this.resources.update({ universe, id: resource.id }, {
-            ...{ universe },
-            ...resource
-        }, {
+    async saveResource(resource) {
+        this.resources.update({
+            universe: resource.universe,
+            id: resource.id
+        }, resource, {
             upsert: true
         });
     }
 
-    async deleteResource(universe, id) {
-        this.resources.remove({ universe, id });
+    async deleteResource(opts) {
+        this.resources.remove(opts);
     }
 }
 

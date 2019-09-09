@@ -1,21 +1,34 @@
 <template>
-  <v-card>
+  <v-card v-if="article">
     <v-text-field
       label="Note Name"
-      v-model="note.name"
+      v-model="article.name"
+      :readonly="loading"
       filled
       hide-details />
     
     <v-card-text>
       <v-sheet class="pa-3 editor-container">
-        <editor v-model="note.content" />
+        <editor
+          class="pa-4"
+          :readonly="loading"
+          v-model="article"
+          min-height="350" />
       </v-sheet>
     </v-card-text>
 
     <v-card-actions>
+      <v-btn v-if="canDelete"
+          text color="error"
+          :loading="loading"
+          @click="$emit('delete')">
+        <v-icon small>fas fa-trash</v-icon>
+        Delete
+      </v-btn>
       <v-spacer />
       <v-btn text color="success"
-          @click="save">
+          :loading="loading"
+          @click="$emit('save', article)">
         <v-icon small>fas fa-check</v-icon>
         Save
       </v-btn>
@@ -30,22 +43,17 @@
     components: {
       Editor
     },
-    props: ['value'],
+    props: ['note', 'canDelete', 'loading'],
     data: () => ({
-      note: {
-        name: '',
-        content: []
-      } 
+      article: null
     }),
     watch: {
-      value(val) {
-        this.note = val;
+      note(val) {
+        this.article = val.copy();
       }
     },
-    methods: {
-      save() {
-        this.$emit('input', this.note);
-      }
+    mounted() {
+      this.article = this.note;
     }
   };
 </script>

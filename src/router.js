@@ -12,17 +12,6 @@ export default new Router({
       component: () => (import(/* webpackChunkName: "main" */ './views/main/Main.vue')),
       children: [
         {
-          path: 'search',
-          name: 'Global Search',
-          component: () => (import(/* webpackChunkName: "main" */ './views/Search.vue'))
-        },
-        {
-          path: 'notes/:noteId?',
-          name: 'Global Notes',
-          component: () => (import(/* webpackChunkName: "main" */ './views/Notes.vue'))
-        },
-
-        {
           path: '',
           name: 'Dashboard',
           component: () => (import(/* webpackChunkName: "main" */ './views/main/Dashboard.vue'))
@@ -46,7 +35,7 @@ export default new Router({
         {
           path: 'notes/:noteId?',
           name: 'Notes',
-          component: () => (import(/* webpackChunkName: "universe" */ './views/Notes.vue'))
+          component: () => (import(/* webpackChunkName: "universe" */ './views/universe/Notes.vue'))
         },
 
         {

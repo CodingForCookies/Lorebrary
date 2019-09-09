@@ -120,10 +120,9 @@
         { icon: 'map', name: 'Atlas' },
         { icon: 'book', name: 'Codex', exact: false },
         { icon: 'history', name: 'Timelines', exact: false },
-        { icon: 'bookmark', name: 'Stories', exact: false }
-      ],
-
-      newUniverse: false
+        { icon: 'bookmark', name: 'Stories', exact: false },
+        { icon: 'sticky-note', name: 'Notes', exact: false }
+      ]
     }),
     computed: {
       isSmall() {
@@ -139,7 +138,7 @@
       '$route.params.universe'(val) {
         if(!val) return;
 
-        this.$store.dispatch('loadUniverse', val);
+        this.$store.state.universeSelected = val;
       },
 
       // Go to the overview page if the loaded universe changes
@@ -152,7 +151,7 @@
       }
     },
     mounted() {
-      this.$store.dispatch('loadUniverse', this.$route.params.universe);
+      this.$store.state.universeSelected = this.$route.params.universe;
     }
   };
 </script>

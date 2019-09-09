@@ -38,22 +38,22 @@
                         </v-card-text>
                         <v-card-text v-else>
                             <v-row class="px-2">
-                                <v-col v-for="(item, i) in filteredItems" :key="i"
-                                    :class="'pa-2 resource-item ' + (selected == item.id ? 'selected' : '')"
+                                <v-col v-for="(resource, i) in filteredItems" :key="i"
+                                    :class="'pa-2 resource-item ' + (selected == resource.id ? 'selected' : '')"
                                     style="position:relative"
                                     cols="3"
-                                    @click="selected = (selected != item.id ? item.id : null)">
+                                    @click="selected = (selected != resource.id ? resource.id : null)">
                                     <v-img
-                                        :src="item.src || item.blob"
+                                        :src="resource.src"
                                         aspect-ratio="1"/>
                                     <div class="text-center">
-                                        {{ item.name }}
+                                        {{ resource.name }}
                                     </div>
 
                                     <v-btn
                                         absolute top right
                                         small icon
-                                        @click="editing.edit = Object.assign({ }, item); editing.show = true">
+                                        @click="editing.resource = resource.copy(); editing.show = true">
                                         <v-icon small>fas fa-pencil-alt</v-icon>
                                     </v-btn>
                                 </v-col>
@@ -68,7 +68,7 @@
                     <v-btn
                         v-if="items"
                         text
-                        @click="editing.edit = { }; editing.show = true">
+                        @click="editing.resource = new ($lb.Resource)(); editing.show = true">
                         Add Image
                     </v-btn>
                     <v-spacer />
@@ -92,12 +92,12 @@
                 <v-text-field
                     label="Name"
                     filled
-                    v-model="editing.edit.name" />
+                    v-model="editing.resource.name" />
 
                 <v-card-text>
                     <v-combobox
                         label="Tags"
-                        v-model="editing.edit.tags"
+                        v-model="editing.resource.tags"
                         append-icon=""
                         chips
                         multiple
@@ -106,8 +106,8 @@
 
                     <v-text-field
                         label="URL"
-                        v-model="editing.edit.src"
-                        @changed="editing.edit.src ? delete editing.edit.blob : null" />
+                        v-model="editing.resource.src"
+                        @changed="editing.resource.src ? delete editing.resource.blob : null" />
                         
                     <!--<v-file-input
                         v-if="$store.dispatch('hasCapability', 'image.blob')"
@@ -124,9 +124,9 @@
                         color="success"
                         text
                         :loading="editing.loading"
-                        :disabled="!editing.edit.name"
+                        :disabled="!editing.resource.name"
                         @click="saveEditing">
-                        {{ editing.edit.id ? 'Save' : 'Add' }}
+                        {{ editing.isNew ? 'Save' : 'Add' }}
                     </v-btn>
                 </v-card-actions>
             </v-card>
@@ -147,6 +147,7 @@
             editing: {
                 show: false,
                 loading: false,
+                isNew: false,
                 edit: null
             },
 
@@ -178,11 +179,9 @@
             async saveEditing() {
                 this.editing.loading = true;
 
-                this.editing.edit.type = 'image';
+                await this.editing.resource.save();
 
-                await this.$store.dispatch('saveResource', this.editing.edit);
-
-                this.$set(this.items, this.editing.edit.id, this.editing.edit);
+                this.$set(this.items, this.editing.resource.id, this.editing.resource);
 
                 this.editing.loading = false;
                 this.editing.show = false;
@@ -191,7 +190,7 @@
         async mounted() {
             this.selected = this.value;
 
-            this.items = await this.$store.dispatch('getResources', { type: 'image' });
+            this.items = await this.$lb.Resource.find({ type: 'image' });
         }
     }
 </script>

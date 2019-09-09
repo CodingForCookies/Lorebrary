@@ -70,12 +70,6 @@
 
       <v-spacer />
 
-      <v-btn icon :to="{ name: 'Global Search' }">
-        <v-icon>fas fa-search</v-icon>
-      </v-btn>
-      <v-btn icon :to="{ name: 'Global Notes' }">
-        <v-icon>fas fa-sticky-note</v-icon>
-      </v-btn>
       <v-btn icon :to="{ name: 'Account' }">
         <v-icon>fas fa-user</v-icon>
       </v-btn>
