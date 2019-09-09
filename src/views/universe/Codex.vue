@@ -490,7 +490,12 @@
           this.article = null;
         }
 
-        let articles = await this.$lb.Article.find({ type: this.type });
+        let articles = await this.$lb.Article.find(
+          // 'Other' will show accidentially orphaned articles.
+          this.type == 'other' ? {
+            $or: [ { type: this.type }, { type: null } ]
+          } : { type: this.type }
+        );
 
         this.articleMap = { };
 
