@@ -507,6 +507,7 @@
           }else{
             let parent = this.articleMap[article.parent];
             if(!parent) {
+              article.parent = null;
               this.articles.push(article);
               continue;
             }
