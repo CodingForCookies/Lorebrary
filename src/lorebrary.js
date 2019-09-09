@@ -39,7 +39,7 @@ export class Universe {
     }
 
     async save() {
-        console.debug('Universe#save');
+        console.debug('Universe#save', this.toObject());
 
         await wait();
   
@@ -118,8 +118,6 @@ export class Article extends Entry {
             ...super.toObject(),
             ...{
                 type: this.type,
-
-                category: this.category,
                 parent: this.parent,
         
                 icon: this.icon,
@@ -148,25 +146,22 @@ export class Article extends Entry {
     }
 
     async save() {
-        console.debug('Entry#save');
+        console.debug('Article#save', this.toObject());
   
         await wait();
   
         return await driver(this).getStore().saveArticle(this.toObject());
     }
 
-    async delete(opts) {
-        console.debug('Entry#delete');
+    async delete(retainChildren) {
+        console.debug('Article#delete');
   
         await wait();
   
         await driver(this).getStore().deleteArticle({
-            ...opts,
-            ...{
-                universe: this.universe,
-                id: this.id
-            }
-        });
+            universe: this.universe,
+            id: this.id
+        }, retainChildren);
     }
 
     static async get(opts) {
@@ -219,24 +214,21 @@ export class Note extends Entry {
     }
 
     async save() {
-        console.debug('Entry#save');
+        console.debug('Note#save', this.toObject());
   
         await wait();
   
         return await driver(this).getStore().saveNote(this.toObject());
     }
 
-    async delete(opts) {
-        console.debug('Entry#delete');
+    async delete() {
+        console.debug('Note#delete');
   
         await wait();
   
         await driver(this).getStore().deleteNote({
-            ...opts,
-            ...{
-                universe: this.universe,
-                id: this.id
-            }
+            universe: this.universe,
+            id: this.id
         });
     }
 
@@ -310,7 +302,7 @@ export class Resource {
     }
 
     async save() {
-        console.debug('Resource#save');
+        console.debug('Resource#save', this.toObject());
   
         await wait();
   

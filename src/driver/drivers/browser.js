@@ -131,16 +131,19 @@ export class BrowserStore extends Store {
         });
     }
 
-    async deleteArticle(opts) {
-        if(opts.retainChildren) {
+    async deleteArticle(opts, retainChildren) {
+        if(retainChildren) {
             let article = await this.getArticle(opts);
 
             this.articles.remove(opts);
-            this.articles.update({ universe: opts.universe, parent: opts.id }, {
-                $set: {
-                    parent: article.parent
-                }
-            }, { upsert: true });
+
+            if(article) {
+                this.articles.update({ universe: opts.universe, parent: opts.id }, {
+                    $set: {
+                        parent: article.parent
+                    }
+                }, { upsert: true });
+            }
         }else{
             let promises = [];
 
@@ -150,9 +153,8 @@ export class BrowserStore extends Store {
             for(let child of children) {
                 promises.push(await this.deleteArticle({
                     universe: opts,
-                    id: child.id,
-                    retainChildren: false
-                }));
+                    id: child.id
+                }, false));
             }
             
             this.articles.remove(opts);

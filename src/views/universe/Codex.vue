@@ -85,8 +85,6 @@
                   single-line
                   full-width
                   :readonly="saving || !isEditing"
-                  :hide-details="!article || !article.parent"
-                  :hint="article.parent ? 'Child of \'' + (articleParent || articleMap[article.parent]).name + '\'' : null"
                   persistent-hint>
                   <template v-slot:prepend>
                     <v-icon>
@@ -393,7 +391,13 @@
 
       // If the article parameter changes, load the new article.
       '$route.params.article'(val) {
-        if(this.article.id == val) return;
+        if(this.article && this.article.id == val) return;
+
+        if(!val) {
+          this.newArticle();
+          return;
+        }
+
         this.loadArticle(val);
       },
 
@@ -512,7 +516,6 @@
           }else{
             let parent = this.articleMap[article.parent];
             if(!parent) {
-              article.parent = null;
               this.articles.push(article);
               continue;
             }
@@ -526,7 +529,7 @@
       newArticle(parent) {
         this.ignoreChanges = true;
 
-        this.article = new (this.$lb.Article)({ type: this.type, parent });
+        this.article = new (this.$lb.Article)({ type: this.type, parent: parent ? parent.id : null });
         this.articleParent = parent;
         
         this.active = [];
@@ -570,7 +573,7 @@
       async deleteArticle() {
         this.deleting.loading = true;
         
-        await this.article.delete({ retainChildren: !this.deleting.children });
+        await this.article.delete(!this.deleting.children);
 
         // Refresh the list
         await this.reloadArticles(true);
