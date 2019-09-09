@@ -506,6 +506,11 @@
             this.articles.push(article);
           }else{
             let parent = this.articleMap[article.parent];
+            if(!parent) {
+              this.articles.push(article);
+              continue;
+            }
+
             if(!parent.children) parent.children = [];
             parent.children.push(article);
           }
