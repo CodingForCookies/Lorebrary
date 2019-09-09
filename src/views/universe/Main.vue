@@ -116,10 +116,10 @@
       navDrawer: null,
 
       navigation: [
-        { icon: 'home', name: 'Overview' },
+        // { icon: 'home', name: 'Overview' },
         { icon: 'map', name: 'Atlas' },
         { icon: 'book', name: 'Codex', exact: false },
-        { icon: 'history', name: 'Timelines', exact: false },
+        // { icon: 'history', name: 'Timelines', exact: false },
         { icon: 'bookmark', name: 'Stories', exact: false },
         { icon: 'sticky-note', name: 'Notes', exact: false }
       ]
