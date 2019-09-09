@@ -23,6 +23,9 @@ export class Universe {
 
         this.id = opts.id || uuid.v4();
 
+        // For use when we change how the database is formatted.
+        this.version = opts.version || 1;
+
         this.driver = opts.driver || 'browser';
 
         this.name = opts.name || 'Unnamed';
@@ -33,6 +36,7 @@ export class Universe {
     toObject() {
         return {
             id: this.id,
+            version: this.version,
             name: this.name,
             description: this.description
         };
