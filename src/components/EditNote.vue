@@ -1,8 +1,8 @@
 <template>
-  <v-card v-if="article">
+  <v-card v-if="note">
     <v-text-field
       label="Note Name"
-      v-model="article.name"
+      v-model="note.name"
       :readonly="loading"
       filled
       hide-details />
@@ -12,7 +12,7 @@
         <editor
           class="pa-4"
           :readonly="loading"
-          v-model="article"
+          v-model="note"
           min-height="350" />
       </v-sheet>
     </v-card-text>
@@ -28,7 +28,7 @@
       <v-spacer />
       <v-btn text color="success"
           :loading="loading"
-          @click="$emit('save', article)">
+          @click="$emit('save', note)">
         <v-icon small>fas fa-check</v-icon>
         Save
       </v-btn>
@@ -43,17 +43,17 @@
     components: {
       Editor
     },
-    props: ['note', 'canDelete', 'loading'],
+    props: ['value', 'canDelete', 'loading'],
     data: () => ({
-      article: null
+      note: null
     }),
     watch: {
-      note(val) {
-        this.article = val.copy();
+      value(val) {
+        this.note = val.copy();
       }
     },
     mounted() {
-      this.article = this.note;
+      this.note = this.value;
     }
   };
 </script>

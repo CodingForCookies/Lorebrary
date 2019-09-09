@@ -3,7 +3,7 @@
     <v-row class="fill-height">
       <v-col cols="12" md="4">
         <v-card>
-          <v-card-text v-if="!articles"
+          <v-card-text v-if="!notes"
               class="text-center">
             <v-progress-circular
               :size="32"
@@ -25,7 +25,7 @@
 
             <v-divider />
 
-            <v-list-item v-for="(note, id) of articles" :key="id"
+            <v-list-item v-for="(note, id) of notes" :key="id"
               @click="selected = id">
               <v-list-item-content>
                 <v-list-item-title>{{ note.name }}</v-list-item-title>
@@ -35,7 +35,7 @@
         </v-card>
       </v-col>
       <v-col cols="12" md="8">
-        <div v-if="!article"
+        <div v-if="!note"
             class="text-center">
           <v-progress-circular
             :size="64"
@@ -44,16 +44,16 @@
             indeterminate />
         </div>
         <edit-note v-else
-          :can-delete="!article.isNew"
+          :can-delete="!note.isNew"
           :loading="saving || deleting.loading"
-          :note="article"
+          :value="note"
           @delete="deleting.dialog = true"
           @save="saveNote" />
       </v-col>
     </v-row>
     
     <v-dialog
-      v-if="article"
+      v-if="note"
       v-model="deleting.dialog"
       :persistent="deleting.loading"
       width="500">
@@ -69,7 +69,7 @@
         <v-card-title
           class="headline"
           primary-title>
-          Delete '{{ article.name }}'?
+          Delete '{{ note.name }}'?
         </v-card-title>
 
         <v-card-text class="pt-3 pb-0">
@@ -106,10 +106,10 @@
       EditNote
     },
     data: () => ({
-      articles: null,
+      notes: null,
 
       selected: null,
-      article: null,
+      note: null,
       
       saving: false,
       deleting: {
@@ -126,12 +126,12 @@
           return;
         }
         
-        this.article = null;
+        this.note = null;
 
-        let article = await this.$lb.Article.get({ id: val });
+        let note = await this.$lb.Note.get({ id: val });
 
-        if(article) {
-          this.article = article;
+        if(note) {
+          this.note = note;
 
           this.$router.replace({ name: 'Notes', params: { universe: this.$route.params.universe, noteId: val } });
         }else
@@ -139,43 +139,43 @@
       }
     },
     methods: {
-      async reloadArticles(inPlaceReload) {
+      async reloadNotes(inPlaceReload) {
         if(!inPlaceReload) {
-          this.articles = null;
+          this.notes = null;
         }
 
-        let articles = await this.$lb.Article.find({ type: 'note' });
+        let notes = await this.$lb.Note.find();
 
-        this.articles = { };
+        this.notes = { };
 
-        for(let article of articles) {
-          this.articles[article.id] = article;
+        for(let note of notes) {
+          this.notes[note.id] = note;
         }
       },
 
       newNote() {
-        this.article = new (this.$lb.Article)({ type: 'note' });
+        this.note = new (this.$lb.Note)({ type: 'note' });
 
         this.$router.replace({ name: 'Notes', params: { universe: this.$route.params.universe } });
       },
-      async saveNote(article) {
+      async saveNote(note) {
         this.saving = true;
 
-        this.$set(this.articles, article.id, article);
+        this.$set(this.notes, note.id, note);
 
-        await article.save();
+        await note.save();
 
-        await this.reloadArticles(true);
+        await this.reloadNotes(true);
         
         this.saving = false;
       },
       async deleteNote() {
         this.deleting.loading = true;
         
-        await this.article.delete();
+        await this.note.delete();
 
         // Refresh the list
-        await this.reloadArticles(true);
+        await this.reloadNotes(true);
 
         this.deleting.dialog = false;
 
@@ -185,7 +185,7 @@
     mounted() {
       this.selected = this.$route.params.noteId;
 
-      this.reloadArticles();
+      this.reloadNotes();
     }
   };
 </script>

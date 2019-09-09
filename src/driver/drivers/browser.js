@@ -19,14 +19,14 @@ export class BrowserStore extends Store {
         
         this.universes = new Datastore('universes');
         this.articles = new Datastore('articles');
-        
+        this.notes = new Datastore('notes');
         this.resources = new Datastore('resources');
     }
 
     async init() {
         this.universes.loadDatabase();
         this.articles.loadDatabase();
-        
+        this.notes.loadDatabase();
         this.resources.loadDatabase();
     }
 
@@ -176,6 +176,49 @@ export class BrowserStore extends Store {
                 resolve(result);
             });
         });
+    }
+
+
+    getNotes(opts) {
+        if(opts.search !== undefined) {
+            opts.name = new RegExp(escapeRegex(opts.search), 'gi');
+            delete opts.search;
+        }
+
+        return new Promise(resolve => {
+            this.notes.find(opts, {
+                id: 1,
+                name: 1
+            }, (err, result) => {
+                resolve(result);
+            });
+        });
+    }
+    
+    getNote(opts) {
+        return new Promise((resolve, reject) => {
+            this.notes.findOne(opts, (err, result) => {
+                if(!result) return resolve(null);
+                resolve(result);
+            });
+        });
+    }
+
+    async saveNote(note) {
+        return new Promise(resolve => {
+            this.notes.update({
+                universe: note.universe,
+                id: note.id
+            }, note, {
+                upsert: true
+            }, (err) => {
+                resolve();
+            });
+        });
+    }
+
+    async deleteNote(opts) {
+        this.notes.remove(opts);
     }
 
     

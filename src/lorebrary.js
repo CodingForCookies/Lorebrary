@@ -68,43 +68,65 @@ export class Universe {
     }
 }
 
-export class Article {
+class Entry {
     constructor(opts) {
         opts = opts || { };
         
         opts.universe = opts.universe || store.state.universeSelected;
         
+        if(!opts.universe)
+            throw new Error('Attempted to create an entry with no Universe!');
+
         this.isNew = !opts.id;
 
         this.id = opts.id || uuid.v4();
         this.universe = opts.universe;
 
-        this.type = opts.type || null;
-        this.parent = opts.parent || null;
-        
-        this.icon = opts.icon || 'box';
         this.name = opts.name || '';
-        this.tags = opts.tags || [];
 
         this.content = opts.content || [];
-        this.mentions = opts.mentions || [];
     }
 
     toObject() {
         return {
             universe: this.universe,
             id: this.id,
-            
-            type: this.type,
-            parent: this.parent,
     
-            icon: this.icon,
-            image: this.image,
             name: this.name,
-            tags: this.tags,
             
-            content: this.content,
-            mentions: this.mentions
+            content: this.content
+        };
+    }
+}
+
+export class Article extends Entry {
+    constructor(opts) {
+        super(opts);
+
+        this.category = opts.category || null;
+        this.parent = opts.parent || null;
+        
+        this.icon = opts.icon || 'box';
+        this.image = opts.image || null
+        this.tags = opts.tags || [];
+
+        this.mentions = [];
+    }
+
+    toObject() {
+        return {
+            ...super.toObject(),
+            ...{
+                type: 'article',
+
+                category: this.category,
+                parent: this.parent,
+        
+                icon: this.icon,
+                image: this.image,
+                tags: this.tags,
+                mentions: this.mentions
+            }
         };
     }
 
@@ -126,7 +148,7 @@ export class Article {
     }
 
     async save() {
-        console.debug('Article#save');
+        console.debug('Entry#save');
   
         await wait();
   
@@ -134,7 +156,7 @@ export class Article {
     }
 
     async delete(opts) {
-        console.debug('Article#delete');
+        console.debug('Entry#delete');
   
         await wait();
   
@@ -152,7 +174,7 @@ export class Article {
 
         if(!opts.universe) opts.universe = store.state.universeSelected;
       
-        console.debug('Article.get', opts);
+        console.debug('Entry.get', opts);
   
         await wait();
   
@@ -168,13 +190,84 @@ export class Article {
         
         if(!opts.universe) opts.universe = store.state.universeSelected;
       
-        console.debug('Articles.find', opts);
+        console.debug('Entry.find', opts);
   
         await wait();
   
         let results = await driver({ universe: opts.universe }).getStore().getArticles(opts);
 
         return results.map(v => new Article(v));
+    }
+}
+
+export class Note extends Entry {
+    constructor(opts) {
+        super(opts);
+    }
+
+    toObject() {
+        return {
+            ...super.toObject(),
+            ...{
+                type: 'note'
+            }
+        };
+    }
+
+    copy() {
+        return new Note(this.toObject());
+    }
+
+    async save() {
+        console.debug('Entry#save');
+  
+        await wait();
+  
+        return await driver(this).getStore().saveNote(this.toObject());
+    }
+
+    async delete(opts) {
+        console.debug('Entry#delete');
+  
+        await wait();
+  
+        await driver(this).getStore().deleteNote({
+            ...opts,
+            ...{
+                universe: this.universe,
+                id: this.id
+            }
+        });
+    }
+
+    static async get(opts) {
+        opts = opts || { };
+
+        if(!opts.universe) opts.universe = store.state.universeSelected;
+      
+        console.debug('Entry.get', opts);
+  
+        await wait();
+  
+        let result = await driver({ universe: opts.universe }).getStore().getNote(opts);
+
+        if(!result) throw new Error('No Note found.')
+
+        return new Note(result);
+    }
+
+    static async find(opts) {
+        opts = opts || {};
+        
+        if(!opts.universe) opts.universe = store.state.universeSelected;
+      
+        console.debug('Entry.find', opts);
+  
+        await wait();
+  
+        let results = await driver({ universe: opts.universe }).getStore().getNotes(opts);
+
+        return results.map(v => new Note(v));
     }
 }
 
@@ -185,7 +278,7 @@ export class Resource {
         opts.universe = opts.universe || store.state.universeSelected;
         
         if(!opts.universe)
-            throw new Error('Attempted to create an article with no Universe!');
+            throw new Error('Attempted to create a resource with no Universe!');
 
         this.isNew = !opts.id;
 
