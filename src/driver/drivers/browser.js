@@ -19,6 +19,10 @@ export class BrowserStore extends Store {
         
         this.universes = new Datastore('universes');
         this.articles = new Datastore('articles');
+
+        this.stories = new Datastore('stories');
+        this.storyChapters = new Datastore('story.chapters');
+        
         this.notes = new Datastore('notes');
         this.resources = new Datastore('resources');
     }
@@ -26,12 +30,16 @@ export class BrowserStore extends Store {
     async init() {
         this.universes.loadDatabase();
         this.articles.loadDatabase();
+
+        this.stories.loadDatabase();
+        this.storyChapters.loadDatabase();
+        
         this.notes.loadDatabase();
         this.resources.loadDatabase();
     }
 
 
-    getUniverses() {
+    findUniverses() {
         return new Promise(resolve => this.universes.find({ }, (err, result) => resolve(result)));
     }
 
@@ -55,7 +63,8 @@ export class BrowserStore extends Store {
         this.universes.remove({ id });
     }
 
-    getArticles(opts) {
+
+    findArticles(opts) {
         if(opts.search !== undefined) {
             opts.name = new RegExp(escapeRegex(opts.search), 'gi');
             delete opts.search;
@@ -147,7 +156,7 @@ export class BrowserStore extends Store {
         }else{
             let promises = [];
 
-            let children = await this.getArticles(opts);
+            let children = await this.findArticles(opts);
 
             // Remove all children. This is recursive.
             for(let child of children) {
@@ -181,7 +190,93 @@ export class BrowserStore extends Store {
     }
 
 
-    getNotes(opts) {
+    findStories(opts) {
+        if(opts.search !== undefined) {
+            opts.title = new RegExp(escapeRegex(opts.search), 'gi');
+            delete opts.search;
+        }
+
+        return new Promise(resolve => {
+            this.stories.find(opts, {
+                id: 1,
+                title: 1
+            }, (err, result) => {
+                resolve(result);
+            });
+        });
+    }
+    
+    getStory(opts) {
+        return new Promise((resolve, reject) => {
+            this.stories.findOne(opts, (err, result) => {
+                if(!result) return resolve(null);
+                resolve(result);
+            });
+        });
+    }
+
+    async saveStory(story) {
+        return new Promise(resolve => {
+            this.stories.update({
+                universe: story.universe,
+                id: story.id
+            }, story, {
+                upsert: true
+            }, (err) => {
+                resolve();
+            });
+        });
+    }
+
+    async deleteStory(opts) {
+        this.stories.remove(opts);
+    }
+
+    findChapters(opts) {
+        if(opts.search !== undefined) {
+            opts.name = new RegExp(escapeRegex(opts.search), 'gi');
+            delete opts.search;
+        }
+
+        return new Promise(resolve => {
+            this.storyChapters.find(opts, {
+                id: 1,
+                story: 1,
+                name: 1
+            }, (err, result) => {
+                resolve(result);
+            });
+        });
+    }
+    
+    getChapter(opts) {
+        return new Promise((resolve, reject) => {
+            this.storyChapters.findOne(opts, (err, result) => {
+                if(!result) return resolve(null);
+                resolve(result);
+            });
+        });
+    }
+
+    async saveChapter(chapter) {
+        return new Promise(resolve => {
+            this.storyChapters.update({
+                universe: chapter.universe,
+                id: chapter.id
+            }, chapter, {
+                upsert: true
+            }, (err) => {
+                resolve();
+            });
+        });
+    }
+
+    async deleteChapter(opts) {
+        this.storyChapters.remove(opts);
+    }
+
+
+    findNotes(opts) {
         if(opts.search !== undefined) {
             opts.name = new RegExp(escapeRegex(opts.search), 'gi');
             delete opts.search;
@@ -224,7 +319,7 @@ export class BrowserStore extends Store {
     }
 
     
-    getResources(opts) {
+    findResources(opts) {
         if(opts.search !== undefined) {
             opts.name = new RegExp(escapeRegex(opts.search), 'gi');
             delete opts.search;

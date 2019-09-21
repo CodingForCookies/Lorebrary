@@ -99,7 +99,7 @@
     <editor-content ref="input" class="editor__content" :editor="editor"
       :style="minHeight ? 'min-height:' + minHeight + 'px' : undefined" />
     
-    <div v-if="allowMentions"
+    <div v-if="this.allowMentions !== undefined && this.allowMentions !== false"
         class="suggestion-list" v-show="showSuggestions" ref="suggestions">
       <template v-if="hasResults">
         <div
@@ -199,7 +199,7 @@
               notAfter: ['paragraph'],
             }),
 
-            ...(this.allowMentions !== false ? [new Mention({
+            ...(this.allowMentions !== undefined && this.allowMentions !== false ? [new Mention({
               // is called when a suggestion starts
               onEnter: ({ items, query, range, command, virtualNode, }) => {
                 this.suggestions.virtualNode = virtualNode;
@@ -300,12 +300,11 @@
         return this.suggestions.items.length;
       },
       showSuggestions() {
-        return this.suggestions.query || this.hasResults;
+        return this.hasResults;
       },
     },
     watch: {
       isEditable(val) {
-        console.log(val);
         this.editor.setOptions({
           editable: val
         });
@@ -357,7 +356,7 @@
         // If the popup is gone, ignore the result. :(
         if(this.suggestions.navigatedIndex == null) return;
 
-        this.suggestions.items = Object.values(articles);
+        this.suggestions.items = articles;
 
         // Update the popup
         this.renderPopup();
@@ -397,6 +396,8 @@
         if (this.suggestions.popup) {
           return
         }
+
+        console.log(this.$refs.suggestions);
 
         this.suggestions.popup = tippy(this.suggestions.virtualNode, {
           content: this.$refs.suggestions,

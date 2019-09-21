@@ -53,41 +53,48 @@ export class Store {
     /**
      * This should return all universes, but only their Universe{ id, name, description }.
      */
-    async getUniverses() { return []; }
+    async findUniverses() { return []; }
     
     async getUniverse(id) { return null; }
 
-    async saveUniverse(id, data) { }
+    async saveUniverse(universe) { }
 
     async deleteUniverse(id) { }
+
     
-    /**
-     * args: { type, search }
-     * Returns the articles that are a child of the defined parent. If parent is null, return all articles with no parent.
-     * This should return Article{ id, icon, name, tags, children? }.
-     */
-    async getArticles(universe, opts) { return null; }
+    async findArticles(opts) { return null; }
     
-    async getArticle(universe, id) { return null; }
+    async getArticle(opts) { return null; }
 
-    async saveArticle(universe, article) { }
+    async saveArticle(article) { }
 
-    /**
-     * Find all articles with this as a parent and update them according to the second parameter.
-     * true: set them to the removed article's parent.
-     * false: remove them as well.
-     */
-    async deleteArticle(universe, opts) { }
+    async deleteArticle(opts, retainChildren) { }
 
-    /**
-     * Return all Article{ id, icon, name } that directly reference the passed article ID.
-     */
-    async getArticleMentions(universe, id) { return null; }
+    async getArticleMentions(opts) { return null; }
+
+    
+    async findStories(opts) { }
+
+    async getStory(opts) { }
+
+    async saveStory(story) { }
+
+    async deleteStory(opts) { }
+
+
+    async findNotes(opts) { }
+
+    async getNote(opts) { }
+
+    async saveNote(note) { }
+
+    async deleteNote(opts) { }
+
 
     /**
      * Return all resources of Resource{ type }. Resources are not expected to return the full content in this array.
      */
-    async getResources(universe, opts) { }
+    async findResources(universe, opts) { }
 
     /**
      * Return the requested resource in its entirety.

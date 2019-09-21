@@ -70,7 +70,7 @@ export default new Vuex.Store({
       for(let [id, driver] of Object.entries(drivers)) {
         if(!driver.isEnabled()) continue;
 
-        promises.push(driver.getStore().getUniverses().then(data => {
+        promises.push(driver.getStore().findUniverses().then(data => {
           for(let universe of data) {
             universe.driver = id;
             

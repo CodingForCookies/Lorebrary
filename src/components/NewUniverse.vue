@@ -93,7 +93,6 @@
         },
         mounted() {
             this.universe = new (this.$lb.Universe)();
-            console.log(this.universe);
         }
     }
 </script>

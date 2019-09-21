@@ -62,7 +62,12 @@ export default new Router({
         {
           path: 'stories',
           name: 'Stories',
-          component: () => (import(/* webpackChunkName: "universe" */ './views/Unimplemented.vue'))
+          component: () => (import(/* webpackChunkName: "universe" */ './views/universe/Stories.vue'))
+        },
+        {
+          path: 'stories/:storyId/:chapterId?',
+          name: 'Story',
+          component: () => (import(/* webpackChunkName: "universe" */ './views/universe/Story.vue'))
         },
         {
           path: 'resources',

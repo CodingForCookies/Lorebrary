@@ -126,7 +126,7 @@
     watch: {
       async selected(val) {
         if(val == null) {
-          this.$router.replace({ name: 'Notes', params: { universe: this.$route.params.universe } });
+          this.$router.push({ name: 'Notes', params: Object.assign(this.$route.params, { noteId: null }) });
 
           this.newNote();
           return;
@@ -139,7 +139,7 @@
         if(note) {
           this.note = note;
 
-          this.$router.replace({ name: 'Notes', params: { universe: this.$route.params.universe, noteId: val } });
+          this.$router.push({ name: 'Notes', params: Object.assign(this.$route.params, { noteId: this.note.id }) });
         }else
           this.newNote();
       }
@@ -162,7 +162,7 @@
       newNote() {
         this.note = new (this.$lb.Note)({ type: 'note' });
 
-        this.$router.replace({ name: 'Notes', params: { universe: this.$route.params.universe } });
+        this.$router.push({ name: 'Notes', params: { universe: this.$route.params.universe } });
       },
       async saveNote(note) {
         this.saving = true;
@@ -174,6 +174,9 @@
         await this.reloadNotes(true);
         
         this.saving = false;
+        
+        if(this.$route.params.noteId != note.id)
+          this.$router.push({ name: 'Notes', params: Object.assign(this.$route.params, { noteId: note.id }) });
       },
       async deleteNote() {
         this.deleting.loading = true;

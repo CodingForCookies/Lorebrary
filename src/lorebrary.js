@@ -193,24 +193,179 @@ export class Article extends Entry {
   
         await wait();
   
-        let results = await driver({ universe: opts.universe }).getStore().getArticles(opts);
+        let results = await driver({ universe: opts.universe }).getStore().findArticles(opts);
 
         return results.map(v => new Article(v));
     }
 }
 
-export class Note extends Entry {
+export class Story {
+    constructor(opts) {
+        opts = opts || { };
+        
+        opts.universe = opts.universe || store.state.universeSelected;
+        
+        if(!opts.universe)
+            throw new Error('Attempted to create a Story with no Universe!');
+
+        this.isNew = !opts.id;
+
+        this.id = opts.id || uuid.v4();
+        this.universe = opts.universe;
+
+        this.title = opts.title || '';
+
+        this.chapters = opts.chapters || [];
+    }
+
+    toObject() {
+        return {
+            universe: this.universe,
+            id: this.id,
+    
+            title: this.title,
+            chapters: this.chapters
+        };
+    }
+
+    copy() {
+        return new Story(this.toObject());
+    }
+
+    async save() {
+        console.debug('Story#save', this.toObject());
+  
+        await wait();
+  
+        return await driver(this).getStore().saveStory(this.toObject());
+    }
+
+    async delete() {
+        console.debug('Story#delete');
+  
+        await wait();
+  
+        await driver(this).getStore().deleteStory({
+            universe: this.universe,
+            id: this.id
+        });
+    }
+
+    static async get(opts) {
+        opts = opts || { };
+
+        if(!opts.universe) opts.universe = store.state.universeSelected;
+      
+        console.debug('Story.get', opts);
+  
+        await wait();
+  
+        let result = await driver({ universe: opts.universe }).getStore().getStory(opts);
+
+        if(!result) throw new Error('No Story found.')
+
+        return new Story(result);
+    }
+
+    static async find(opts) {
+        opts = opts || {};
+        
+        if(!opts.universe) opts.universe = store.state.universeSelected;
+      
+        console.debug('Story.find', opts);
+  
+        await wait();
+  
+        let results = await driver({ universe: opts.universe }).getStore().findStories(opts);
+
+        return results.map(v => new Story(v));
+    }
+}
+
+export class Chapter extends Entry {
     constructor(opts) {
         super(opts);
+
+        opts = opts || { };
+
+        if(!opts.story)
+            throw new Error('Attempted to create a Chapter with no Story!');
+
+        this.story = opts.story;
     }
 
     toObject() {
         return {
             ...super.toObject(),
             ...{
-                type: 'note'
+                story: this.story
             }
         };
+    }
+
+    copy() {
+        return new Chapter(this.toObject());
+    }
+
+    async save() {
+        console.debug('Chapter#save', this.toObject());
+  
+        await wait();
+  
+        return await driver(this).getStore().saveChapter(this.toObject());
+    }
+
+    async delete() {
+        console.debug('Chapter#delete');
+  
+        await wait();
+  
+        await driver(this).getStore().deleteChapter({
+            universe: this.universe,
+            id: this.id
+        });
+    }
+
+    static async get(opts) {
+        opts = opts || { };
+
+        if(!opts.universe) opts.universe = store.state.universeSelected;
+
+        if(!opts.story)
+            throw new Error('Attempted to get a Chapter with no Story!');
+
+        console.debug('Chapter.get', opts);
+  
+        await wait();
+  
+        let result = await driver({ universe: opts.universe }).getStore().getChapter(opts);
+
+        if(!result) throw new Error('No Chapter found.')
+
+        return new Chapter(result);
+    }
+
+    static async find(opts) {
+        opts = opts || {};
+        
+        if(!opts.universe) opts.universe = store.state.universeSelected;
+      
+        if(!opts.story)
+            throw new Error('Attempted to find Chapters with no Story!');
+
+        console.debug('Chapter.find', opts);
+  
+        await wait();
+  
+        let results = await driver({ universe: opts.universe }).getStore().findChapters(opts);
+        
+        return results.map(v => new Chapter(v));
+    }
+}
+
+export class Note extends Entry {
+    constructor(opts) {
+        super(opts);
     }
 
     copy() {
@@ -241,7 +396,7 @@ export class Note extends Entry {
 
         if(!opts.universe) opts.universe = store.state.universeSelected;
       
-        console.debug('Entry.get', opts);
+        console.debug('Note.get', opts);
   
         await wait();
   
@@ -257,11 +412,11 @@ export class Note extends Entry {
         
         if(!opts.universe) opts.universe = store.state.universeSelected;
       
-        console.debug('Entry.find', opts);
+        console.debug('Note.find', opts);
   
         await wait();
   
-        let results = await driver({ universe: opts.universe }).getStore().getNotes(opts);
+        let results = await driver({ universe: opts.universe }).getStore().findNotes(opts);
 
         return results.map(v => new Note(v));
     }
@@ -274,7 +429,7 @@ export class Resource {
         opts.universe = opts.universe || store.state.universeSelected;
         
         if(!opts.universe)
-            throw new Error('Attempted to create a resource with no Universe!');
+            throw new Error('Attempted to create a Resource with no Universe!');
 
         this.isNew = !opts.id;
 
@@ -349,7 +504,7 @@ export class Resource {
   
         await wait();
   
-        let results = await driver({ universe: opts.universe }).getStore().getResources(opts);
+        let results = await driver({ universe: opts.universe }).getStore().findResources(opts);
 
         return results.map(v => new Resource(v));
     }
