@@ -1,56 +1,78 @@
 <template>
   <sidebar-page
       :loading="!chapter">
-    <template v-slot:sidebar>
-      <v-card-title v-if="story">
-        {{ story.title }}
-      </v-card-title>
-      <v-card-text v-if="!chapters"
-          class="text-center">
-        <v-progress-circular
-          :size="32"
-          :width="2"
-          indeterminate />
-      </v-card-text>
-      <v-list v-else
-          dense>
-        <v-list-item @click="selected = null">
-          <v-list-item-content>
-            <v-list-item-title>New Chapter</v-list-item-title>
+    <v-dialog
+      v-model="editStory"
+      width="500">
+      <edit-story
+        v-model="story"
+        @saved="editStory = false" />
+    </v-dialog>
+
+    <template v-slot:sidebar v-if="!!story">
+      <v-list>
+        <v-list-item @click="editStory = true">
+          <v-list-item-content class="text-center">
+            <v-list-item-title class="title">
+                {{ story.title }}
+            </v-list-item-title>
           </v-list-item-content>
-          <v-list-item-icon>
-            <div class="mx-auto">
-              <v-icon small>fas fa-plus</v-icon>
-            </div>
-          </v-list-item-icon>
         </v-list-item>
 
         <v-divider />
 
-        <v-list-item v-if="Object.keys(chapters).length == 0">
-          <v-list-item-content>
-            <small>You have made no chapters</small>
+        <v-list-item v-if="!chapters">
+          <v-list-item-content class="text-center">
+            <v-progress-circular
+              :size="32"
+              :width="2"
+              indeterminate />
           </v-list-item-content>
         </v-list-item>
-        <draggable v-else
-          v-model="story.chapters"
-          handle=".handle">
-          <v-list-item v-for="id of story.chapters" :key="id"
-              @click="selected = id">
-            <v-list-item-icon class="handle">
-              <v-icon small class="ma-1">fas fa-align-justify</v-icon>
-            </v-list-item-icon>
+        <template v-else>
+          <v-list-item @click="selected = null">
             <v-list-item-content>
-              <v-list-item-title>{{ chapters[id].name }}</v-list-item-title>
+              <v-list-item-title>New Chapter</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-icon>
+              <div class="mx-auto">
+                <v-icon small>fas fa-plus</v-icon>
+              </div>
+            </v-list-item-icon>
+          </v-list-item>
+
+          <v-divider />
+
+          <v-list-item v-if="Object.keys(chapters).length == 0">
+            <v-list-item-content>
+              <small>You have made no chapters</small>
             </v-list-item-content>
           </v-list-item>
-        </draggable>
+          <v-list-item-group v-else
+              v-model="selected">
+            <draggable
+              v-model="story.chapters"
+              handle=".handle">
+              <v-list-item v-for="id of story.chapters" :key="id"
+                  :value="id">
+                <v-list-item-icon class="handle">
+                  <v-icon small class="ma-1">fas fa-align-justify</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title>{{ chapters[id].name }}</v-list-item-title>
+                </v-list-item-content>
+                <v-list-item-icon class="handle">
+                  <v-icon small class="ma-1">fas fa-trash</v-icon>
+                </v-list-item-icon>
+              </v-list-item>
+            </draggable>
+          </v-list-item-group>
+        </template>
       </v-list>
     </template>
     
     <template v-slot:content>
       <fancy-editor
-        ref="editor"
         class="pa-4"
         min-height="350"
         v-model="chapter"
@@ -58,7 +80,7 @@
         @save="saveChapter"
         @delete="deleteChapter" />
 
-      <v-btn v-if="selected"
+      <v-btn
           absolute
           top right
           min-width="60"
@@ -74,16 +96,18 @@
 
 <script>
   import SidebarPage from '../../components/SidebarPage.vue';
+  import EditStory from '../../components/EditStory.vue';
   import FancyEditor from '../../components/FancyEditor.vue';
 
   import draggable from 'vuedraggable'
 
   export default {
     components: {
-      SidebarPage, FancyEditor, draggable
+      SidebarPage, EditStory, FancyEditor, draggable
     },
     data: () => ({
       story: null,
+      editStory: false,
 
       chapters: null,
 
@@ -187,7 +211,11 @@
 
       this.reloadChapters();
       
-      this.selected = this.$route.params.chapterId;
+      if(this.$route.params.chapterId)
+        this.selected = this.$route.params.chapterId;
+      else{
+        this.newChapter();
+      }
     }
   };
 </script>

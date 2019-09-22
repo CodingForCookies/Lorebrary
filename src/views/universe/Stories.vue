@@ -18,7 +18,7 @@
                 <v-dialog
                   v-model="newStory"
                   width="500">
-                  <new-story @created="onStoryCreated" />
+                  <edit-story @saved="onStoryCreated" />
                 </v-dialog>
               </v-sheet>
             </template>
@@ -46,10 +46,10 @@
 </template>
 
 <script>
-  import NewStory from '../../components/NewStory.vue';
+  import EditStory from '../../components/EditStory.vue';
 
   export default {
-    components: { NewStory },
+    components: { EditStory },
     data: () => ({
       newStory: false,
 

@@ -114,11 +114,6 @@
                 });
             },
 
-            name(val, oldVal) {
-                if(this.ignoreChanges || !val || !oldVal) return;
-
-                this.unsaved = true;
-            },
             entry: {
                 deep: true,
                 handler(val, oldVal) {

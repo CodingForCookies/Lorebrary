@@ -40,6 +40,7 @@
         </v-col>
       </template>
     </v-row>
+    <slot />
   </v-container>
 </template>
 

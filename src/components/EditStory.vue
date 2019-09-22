@@ -19,8 +19,8 @@
                 text
                 :loading="loading"
                 :disabled="story.title.length == 0"
-                @click="create">
-                Create Story
+                @click="save">
+                {{ !value ? 'Create Story' : 'Save' }}
             </v-btn>
         </v-card-actions>
     </v-card>
@@ -28,13 +28,14 @@
 
 <script>
     export default {
+        props: ['value'],
         data: () => ({
             loading: false,
 
             story: null
         }),
         methods: {
-            async create() {
+            async save() {
                 if(this.loading) return;
 
                 this.loading = true;
@@ -43,11 +44,16 @@
 
                 this.loading = false;
 
-                this.$emit('created', this.story);
+                this.$emit('input', this.story);
+                this.$emit('saved', this.story);
             }
         },
         mounted() {
-            this.story = new (this.$lb.Story)();
+            if(!this.value)
+                this.story = new (this.$lb.Story)();
+            else{
+                this.story = this.value.copy();
+            }
         }
     }
 </script>
