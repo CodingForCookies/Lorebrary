@@ -8,7 +8,7 @@
                 single-line
                 full-width
                 :readonly="saving || !editing"
-                persistent-hint />
+                hide-details />
         </v-card-title>
 
         <editor
