@@ -162,7 +162,7 @@
         ['city', 'Places', 'places'],
         ['user', 'Beings', 'beings'],
         ['box', 'Things', 'things'],
-        ['book', 'Codex', null]
+        ['book', 'Codex', 'other']
       ],
 
       active: [],
@@ -189,13 +189,8 @@
       }
     }),
     computed: {
-      type: {
-        get() {
-          return this.$route.params.type;
-        },
-        set(val) {
-          throw val;
-        }
+      type() {
+        return this.$route.params.type;
       },
 
       selected: {
@@ -261,7 +256,6 @@
         let articles = await this.$lb.Article.find(
           // 'Other' will show accidentially orphaned articles.
           !this.type ? {
-            // 'Other' for backwards compatability
             $or: [ { type: 'other' }, { type: null } ]
           } : { type: this.type }
         );

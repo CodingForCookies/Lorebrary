@@ -42,6 +42,13 @@ export default new Router({
           path: 'codex/:type?/:article?',
           name: 'Codex',
           meta: { rightDrawer: true },
+          beforeEnter: (to, from, next) => {
+            if(to.params.type) {
+              next();
+            }else{
+              next({ replace: true, name: 'Codex', params: Object.assign(to.params, { type: 'other' }) });
+            }
+          },
           component: () => (import(/* webpackChunkName: "universe" */ './views/universe/Codex.vue'))
         },
         {
