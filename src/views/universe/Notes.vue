@@ -162,7 +162,7 @@
       newNote() {
         this.note = new (this.$lb.Note)({ type: 'note' });
 
-        this.$router.push({ name: 'Notes', params: { universe: this.$route.params.universe } });
+        this.$router.push({ name: 'Notes', params: Object.assign(this.$route.params, { noteId: null }) });
       },
       async saveNote(note) {
         this.saving = true;

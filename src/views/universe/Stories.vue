@@ -1,45 +1,68 @@
 <template>
-  <v-container fluid>
-    <v-row>
-      <v-col cols="12" sm="8" offset-sm="2">
-        <v-row>
-          <v-hover class="story">
-            <template v-slot="{ hover }">
-              <v-sheet color="grey lighten-2"
-                  width="150"
-                  height="200"
-                  :elevation="hover ? 6 : 1"
-                  @click.stop="newStory = true">
-                <v-row align-content="center" 
-                    justify="center"
-                    class="fill-height">
-                  <v-icon large>fas fa-plus</v-icon>
-                </v-row>
-                <v-dialog
-                  v-model="newStory"
-                  width="500">
-                  <edit-story @saved="onStoryCreated" />
-                </v-dialog>
-              </v-sheet>
+  <v-container>
+    <v-overlay :value="!storyList">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
+
+    <v-row v-if="!!storyList">
+      <v-col cols="12">
+        <v-card outlined>
+          <v-btn
+            block text tile
+            @click.stop="newStory = true">
+            Create a Story
+          </v-btn>
+          <v-dialog
+            v-model="newStory"
+            width="500">
+            <edit-story @saved="onStoryCreated" />
+          </v-dialog>
+          <v-divider />
+
+          <v-list>
+            <v-list-item v-if="storyList.length == 0">
+              <v-list-item-content class="text-center">
+                <v-icon large>fas fa-skull-crossbones</v-icon>
+                <div class="mt-4">
+                  No Stories, yet!
+                </div>
+              </v-list-item-content>
+            </v-list-item>
+
+            <template v-else
+                v-for="(story, i) in storyList">
+              <v-divider v-if="i > 0" :key="'divider-' + i" />
+
+              <v-list-item :key="'story-' + i"
+                  three-line
+                  :to="{ name: 'Story', params: Object.assign($route.params, { storyId: story.id }) }">
+                <v-list-item-content>
+                  <div class="overline">{{ story.tags.join(' | ') }}</div>
+                  <v-list-item-title class="headline mb-1">{{ story.title }}</v-list-item-title>
+                  <v-list-item-subtitle>{{ story.description || 'No description provided... :(' }}</v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
             </template>
-          </v-hover>
-          <v-hover v-for="(story, i) in storyList" :key="i"
-              class="story">
-            <template v-slot="{ hover }">
-              <v-sheet color="brown lighten-2" dark
-                  width="150"
-                  height="200"
-                  :elevation="hover ? 6 : 1"
-                  @click="$router.push({ name: 'Story', params: Object.assign($route.params, { storyId: story.id }) })">
-                <v-row align-content="center" 
-                    justify="center"
-                    class="fill-height">
-                  {{ story.title }}
-                </v-row>
-              </v-sheet>
-            </template>
-          </v-hover>
-        </v-row>
+          </v-list>
+        </v-card>
+      </v-col>
+      <v-col cols="12" md="5">
+        <v-card v-for="(article, i) in news" :key="i"
+            class="mb-2"
+            hover outlined>
+          <v-list-item three-line>
+            <v-list-item-content>
+              <div class="overline mb-4">{{ article.category }}</div>
+              <v-list-item-title class="headline mb-1">{{ article.name }}</v-list-item-title>
+              <v-list-item-subtitle>Greyhound divisely hello coldly fonwderfully</v-list-item-subtitle>
+            </v-list-item-content>
+
+            <v-list-item-avatar
+              tile
+              size="80"
+              color="grey" />
+          </v-list-item>
+        </v-card>
       </v-col>
     </v-row>
   </v-container>
@@ -68,10 +91,3 @@
     }
   };
 </script>
-
-<style>
-  .story {
-    margin: .5rem;
-    cursor: pointer;
-  }
-</style>

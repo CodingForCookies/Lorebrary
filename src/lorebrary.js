@@ -33,6 +33,10 @@ export class Universe {
         this.description = opts.description || '';
     }
 
+    copy() {
+        return new Universe(this.toObject());
+    }
+
     toObject() {
         return {
             id: this.id,
@@ -110,7 +114,7 @@ export class Article extends Entry {
         this.type = opts.type || null;
         this.parent = opts.parent || null;
         
-        this.icon = opts.icon || 'box';
+        this.glyph = opts.glyph || 'box';
         this.image = opts.image || null
         this.tags = opts.tags || [];
 
@@ -124,7 +128,7 @@ export class Article extends Entry {
                 type: this.type,
                 parent: this.parent,
         
-                icon: this.icon,
+                glyph: this.glyph,
                 image: this.image,
                 tags: this.tags,
                 mentions: this.mentions
@@ -214,6 +218,8 @@ export class Story {
         this.universe = opts.universe;
 
         this.title = opts.title || '';
+        this.tags = opts.tags || [];
+        this.description = opts.description || '';
 
         this.chapters = opts.chapters || [];
     }
@@ -224,6 +230,9 @@ export class Story {
             id: this.id,
     
             title: this.title,
+            tags: this.tags,
+            description: this.description,
+
             chapters: this.chapters
         };
     }

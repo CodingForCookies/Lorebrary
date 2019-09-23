@@ -199,7 +199,9 @@ export class BrowserStore extends Store {
         return new Promise(resolve => {
             this.stories.find(opts, {
                 id: 1,
-                title: 1
+                title: 1,
+                tags: 1,
+                description: 1
             }, (err, result) => {
                 resolve(result);
             });

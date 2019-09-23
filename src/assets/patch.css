@@ -1,0 +1,24 @@
+.v-app-bar {
+    box-shadow: none !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2) !important;
+}
+
+.v-navigation-drawer--mini-variant .two-lines.v-list-item {
+    flex-direction: column !important;
+
+    padding: 16px;
+}
+
+.v-navigation-drawer--mini-variant .two-lines.v-list-item .v-list-item__icon {
+    margin: 0 auto 16px !important;
+}
+
+.v-navigation-drawer--mini-variant .two-lines.v-list-item .v-list-item__content {
+    display: block !important;
+
+    padding: 0;
+}
+
+.v-navigation-drawer--mini-variant .two-lines.v-list-item .v-list-item__content .v-list-item__title {
+    font-size: .75em;
+}

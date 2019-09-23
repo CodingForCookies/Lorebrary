@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app v-if="!!universe">
     <v-navigation-drawer
       v-model="navDrawer"
       app
@@ -10,7 +10,7 @@
       <template v-if="!$store.state.window.frame">
         <v-list-item
             flat
-            :to="{ name: 'Dashboard' }"
+            :to="{ name: 'Home' }"
             exact
             :ripple="false">
             <template v-if="!(!isSmall && $store.state.window.miniDrawer)">
@@ -34,14 +34,14 @@
       </template>
 
       <v-fade-transition>
-        <v-list v-if="universe">
+        <v-list>
           <v-list-item-group>
             <v-list-item
               v-for="item in navigation"
               :key="item.name"
               class="two-lines"
               link
-              :to="{ name: item.route || item.name, params: { ...{ universe: universe.id }, ...(item.params || { }) } }"
+              :to="{ name: item.route || item.name, params: { ...{ universeId: universe.id }, ...(item.params || { }) } }"
               :exact="item.exact === undefined ? true : item.exact">
               <v-list-item-icon>
                 <div class="mx-auto">
@@ -108,10 +108,11 @@
 </template>
 
 <script>
+  import SelectUniverse from '../../components/SelectUniverse.vue';
   import NewUniverse from '../../components/NewUniverse.vue';
 
   export default {
-    components: { NewUniverse },
+    components: { SelectUniverse, NewUniverse },
     data: () => ({
       navDrawer: null,
 
@@ -135,7 +136,7 @@
     },
     watch: {
       // Auto update the selected universe based on route parameters
-      '$route.params.universe'(val) {
+      '$route.params.universeId'(val) {
         if(!val) return;
 
         this.$store.state.universeSelected = val;
@@ -146,12 +147,12 @@
         if(!val) return;
 
         // Navigate to the new universe page if we aren't currently in a page relating to it
-        if(this.$route.params.universe != val.id)
-          this.$router.push({ name: 'Overview', params: { universe: val.id } });
+        if(this.$route.params.universeId != val.id)
+          this.$router.push({ name: 'Overview', params: { universeId: val.id } });
       }
     },
     mounted() {
-      this.$store.state.universeSelected = this.$route.params.universe;
+      this.$store.state.universeSelected = this.$route.params.universeId;
     }
   };
 </script>

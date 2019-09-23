@@ -1,5 +1,5 @@
 <template>
-    <v-card v-if="!!universe">
+    <v-card tile>
         <v-text-field
             label="Universe Name"
             v-model="universe.name"
@@ -65,10 +65,14 @@
 
 <script>
     export default {
+        props: ['value'],
         data: () => ({
             universe: null
         }),
         watch: {
+            value(val) {
+                this.universe = val.copy();
+            },
             'universe.driver'(val) {
                 this.driver = this.$drivers[val];
             }
@@ -88,11 +92,12 @@
 
                 this.$store.state.universeLoading = false;
 
+                this.$emit('input', this.universe);
                 this.$emit('created');
             }
         },
         mounted() {
-            this.universe = new (this.$lb.Universe)();
+            this.universe = this.value || new (this.$lb.Universe)();
         }
     }
 </script>

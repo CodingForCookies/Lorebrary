@@ -4,9 +4,10 @@
       :loading="!article">
     <template v-slot:sidebar>
       <v-row no-gutters>
-        <v-col v-for="([icon, name], id) in types" :key="icon">
-          <v-btn text block tile :height="64" @click="type = id"
-              :to="{ name: 'Codex', params: { universe: $route.params.universe, type: id }}">
+        <v-col v-for="([icon, name, id], i) in types" :key="i">
+          <v-btn text block tile :height="64"
+              :to="{ name: 'Codex', params: { universeId: $route.params.universeId, type: id }}"
+              exact>
             <div class="text-center">
               <v-icon small>fas fa-{{ icon }}</v-icon>
               <div class="mt-2 overline">{{ name }}</div>
@@ -147,7 +148,7 @@
   import FancyEditor from '../../components/FancyEditor.vue'
   import ImageEditor from '../../components/ImageEditor.vue'
   
-  import ArticleInfo from './ArticleInfo.vue'
+  import ArticleInfo from '../../components/ArticleInfo.vue'
 
   export default {
     components: { SidebarPage, FancyEditor, ImageEditor, ArticleInfo },
@@ -157,13 +158,12 @@
         tags: []
       },
 
-      types: {
-        places: ['city', 'Places'],
-        beings: ['user', 'Beings'],
-        things: ['box', 'Things'],
-        other: ['book', 'Codex']
-      },
-      type: null,
+      types: [
+        ['city', 'Places', 'places'],
+        ['user', 'Beings', 'beings'],
+        ['box', 'Things', 'things'],
+        ['book', 'Codex', null]
+      ],
 
       active: [],
 
@@ -189,6 +189,15 @@
       }
     }),
     computed: {
+      type: {
+        get() {
+          return this.$route.params.type;
+        },
+        set(val) {
+          throw val;
+        }
+      },
+
       selected: {
         get() {
           return this.active.length > 0 ? this.active[0] : null;
@@ -251,8 +260,9 @@
 
         let articles = await this.$lb.Article.find(
           // 'Other' will show accidentially orphaned articles.
-          this.type == 'other' ? {
-            $or: [ { type: this.type }, { type: null } ]
+          !this.type ? {
+            // 'Other' for backwards compatability
+            $or: [ { type: 'other' }, { type: null } ]
           } : { type: this.type }
         );
 
@@ -328,12 +338,15 @@
         cb();
       }
     },
-    mounted() {
-      if(!this.$route.params.type) {
-        this.$router.replace({ name: 'Codex', params: Object.assign(this.$route.params, { type: 'other' }) });
-      }
+    async mounted() {
+      await this.reloadArticles();
       
-      this.type = this.$route.params.type;
+      // If an article is selected, go to it.
+      if(this.$route.params.article) {
+        await this.loadArticle(this.$route.params.article);
+      }else
+        // Otherwise, reset the article editor.
+        this.newArticle();
     }
   }
 </script>

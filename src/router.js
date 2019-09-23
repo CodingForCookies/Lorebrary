@@ -13,18 +13,13 @@ export default new Router({
       children: [
         {
           path: '',
-          name: 'Dashboard',
-          component: () => (import(/* webpackChunkName: "main" */ './views/main/Dashboard.vue'))
-        },
-        {
-          path: 'account',
-          name: 'Account',
-          component: () => (import(/* webpackChunkName: "main" */ './views/main/Account.vue'))
-        },
+          name: 'Home',
+          component: () => (import(/* webpackChunkName: "main" */ './views/main/Home.vue'))
+        }
       ]
     },
     {
-      path: '/universes/:universe',
+      path: '/universes/:universeId?',
       component: () => (import(/* webpackChunkName: "universe" */ './views/universe/Main.vue')),
       children: [
         {

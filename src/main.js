@@ -6,7 +6,11 @@ import vuetify from './plugins/vuetify';
 import 'roboto-fontface/css/roboto/roboto-fontface.css';
 import '@fortawesome/fontawesome-free/css/all.css';
 
-import VueAnalytics from 'vue-analytics'
+import "./assets/vue-scrollbar.css";
+import "./assets/placeholder.css";
+import "./assets/patch.css";
+
+import VueAnalytics from 'vue-analytics';
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -32,7 +36,9 @@ Vue.use(VueAnalytics, {
   }
 });
 
-Vue.config.productionTip = false;
+import ScrollBar from 'vue2-scrollbar';
+
+Vue.component('scroll-area', ScrollBar);
 
 import * as lorebrary from './lorebrary';
 
@@ -43,6 +49,8 @@ Vue.component('app-footer', require('./components/Footer.vue').default);
 
 Vue.prototype.$lb = lorebrary;
 Vue.prototype.$drivers = drivers;
+
+Vue.config.productionTip = false;
 
 new Vue({
   router,

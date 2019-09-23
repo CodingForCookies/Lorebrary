@@ -13,9 +13,11 @@
       <v-list>
         <v-list-item @click="editStory = true">
           <v-list-item-content class="text-center">
+            <div class="overline">{{ story.tags.join(' | ') }}</div>
             <v-list-item-title class="title">
                 {{ story.title }}
             </v-list-item-title>
+            <v-list-item-subtitle>{{ story.description || 'No description provided... :(' }}</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
 
