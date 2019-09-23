@@ -13,7 +13,7 @@
                     full-width
                     hide-details />
 
-                <v-row no-gutters style="min-height:350px">
+                <v-row no-gutters>
                     <v-col cols="12" md="3" class="blue-grey darken-3">
                         <v-list v-if="tags"
                                 dense dark style="min-height:100%">
@@ -36,29 +36,31 @@
                                 color="primary"
                                 indeterminate />
                         </v-card-text>
-                        <v-card-text v-else>
-                            <v-row class="px-2">
-                                <v-col v-for="(resource, i) in filteredItems" :key="i"
-                                    :class="'pa-2 resource-item ' + (selected == resource.id ? 'selected' : '')"
-                                    style="position:relative"
-                                    cols="3"
-                                    @click="selected = (selected != resource.id ? resource.id : null)">
-                                    <v-img
-                                        :src="resource.src"
-                                        aspect-ratio="1"/>
-                                    <div class="text-center">
-                                        {{ resource.name }}
-                                    </div>
+                        <scroll-area v-else style="max-height: 300px">
+                            <v-card-text>
+                                <v-row class="px-2">
+                                    <v-col v-for="(resource, i) in filteredItems" :key="i"
+                                        :class="'pa-2 resource-item ' + (selected == resource.id ? 'selected' : '')"
+                                        style="position:relative"
+                                        cols="3"
+                                        @click="selected = (selected != resource.id ? resource.id : null)">
+                                        <v-img
+                                            :src="resource.src"
+                                            aspect-ratio="1"/>
+                                        <div class="text-center">
+                                            {{ resource.name }}
+                                        </div>
 
-                                    <v-btn
-                                        absolute top right
-                                        small icon
-                                        @click="editing.resource = resource.copy(); editing.show = true">
-                                        <v-icon small>fas fa-pencil-alt</v-icon>
-                                    </v-btn>
-                                </v-col>
-                            </v-row>
-                        </v-card-text>
+                                        <v-btn
+                                            absolute top right
+                                            small icon
+                                            @click="editing.resource = resource.copy(); editing.isNew = false; editing.show = true">
+                                            <v-icon small>fas fa-pencil-alt</v-icon>
+                                        </v-btn>
+                                    </v-col>
+                                </v-row>
+                            </v-card-text>
+                        </scroll-area>
                     </v-col>
                 </v-row>
                 
@@ -68,7 +70,7 @@
                     <v-btn
                         v-if="items"
                         text
-                        @click="editing.resource = new ($lb.Resource)(); editing.show = true">
+                        @click="editing.resource = new ($lb.Resource)({ type: 'image' }); editing.isNew = true; editing.show = true">
                         Add Image
                     </v-btn>
                     <v-spacer />
@@ -106,8 +108,7 @@
 
                     <v-text-field
                         label="URL"
-                        v-model="editing.resource.src"
-                        @changed="editing.resource.src ? delete editing.resource.blob : null" />
+                        v-model="editing.resource.src" />
                         
                     <!--<v-file-input
                         v-if="$store.dispatch('hasCapability', 'image.blob')"
@@ -126,7 +127,7 @@
                         :loading="editing.loading"
                         :disabled="!editing.resource.name"
                         @click="saveEditing">
-                        {{ editing.isNew ? 'Save' : 'Add' }}
+                        {{ editing.isNew ? 'Add' : 'Save' }}
                     </v-btn>
                 </v-card-actions>
             </v-card>
@@ -190,7 +191,14 @@
         async mounted() {
             this.selected = this.value;
 
-            this.items = await this.$lb.Resource.find({ type: 'image' });
+            let resources = { };
+            
+            for(let resource of await this.$lb.Resource.find({ type: 'image' })) {
+                console.log(resource);
+                resources[resource.id] = resource;
+            }
+
+            this.items = resources;
         }
     }
 </script>

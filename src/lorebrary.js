@@ -112,6 +112,10 @@ export class Article extends Entry {
         super(opts);
 
         this.type = opts.type || null;
+        
+        if(!this.type)
+            throw new Error('Attempted to create an Article with no type!');
+
         this.parent = opts.parent || null;
         
         this.glyph = opts.glyph || 'box';
@@ -446,10 +450,14 @@ export class Resource {
         this.universe = opts.universe;
 
         this.type = opts.type || null;
-        this.name = this.name || 'Unnamed';
-        this.tags = this.tags || [];
         
-        this.src = this.src || null;
+        if(!this.type)
+            throw new Error('Attempted to create a Resource with no type!');
+
+        this.name = opts.name || 'Unnamed';
+        this.tags = opts.tags || [];
+        
+        this.src = opts.src || null;
     }
 
     toObject() {

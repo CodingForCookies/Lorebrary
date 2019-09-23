@@ -328,13 +328,7 @@ export class BrowserStore extends Store {
         }
 
         return new Promise(resolve => {
-            this.resources.find(opts, (err, result) => {
-                let resources = { };
-                for(let resource of result) {
-                    resources[resource.id] = resource;
-                }
-                resolve(resources);
-            });
+            this.resources.find(opts, (err, result) => resolve(result));
         });
     }
 
