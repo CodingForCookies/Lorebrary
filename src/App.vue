@@ -12,33 +12,39 @@
           {{ changelog.subtitle }}
         </div>
 
-        <v-card-text v-if="changelog.text"
-            class="mt-4 py-0">
-          <p v-for="(paragraph, i) in changelog.text" :key="'text-' + i" v-html="paragraph"></p>
-        </v-card-text>
+        <v-divider class="mt-3" />
 
-        <v-card-text v-if="changelog.changes"
-            class="mt-4 py-0">
-          <strong>Changes</strong>
+        <scroll-area style="max-height: 400px">
+          <div class="pb-6">
+            <v-card-text v-if="changelog.text"
+                class="mt-3 py-0">
+              <p v-for="(paragraph, i) in changelog.text" :key="'text-' + i" v-html="paragraph"></p>
+            </v-card-text>
 
-          <div v-for="(change, i) in changelog.changes.additions" :key="'additions-' + i"
-            class="success--text">+ {{ change }}</div>
-          <div v-for="(change, i) in changelog.changes.subtractions" :key="'subtractions-' + i"
-            class="error--text">- {{ change }}</div>
-        </v-card-text>
+            <v-card-text v-if="changelog.changes"
+                class="mt-3 py-0">
+              <strong>Changes</strong>
 
-        <v-card-text v-if="changelog.bugs"
-            class="mt-4 py-0">
-          
-          <strong>Bugs</strong>
+              <div v-for="(change, i) in changelog.changes.additions" :key="'additions-' + i"
+                class="success--text">+ {{ change }}</div>
+              <div v-for="(change, i) in changelog.changes.subtractions" :key="'subtractions-' + i"
+                class="error--text">- {{ change }}</div>
+            </v-card-text>
 
-          <div v-for="(change, i) in changelog.bugs.fixed" :key="'fixed-' + i"
-            class="success--text">- {{ change }}</div>
-          <div v-for="(change, i) in changelog.bugs.added" :key="'added-' + i"
-            class="error--text">+ {{ change }}</div>
-        </v-card-text>
+            <v-card-text v-if="changelog.bugs"
+                class="mt-3 py-0">
+              
+              <strong>Bugs</strong>
 
-        <v-divider></v-divider>
+              <div v-for="(change, i) in changelog.bugs.fixed" :key="'fixed-' + i"
+                class="success--text">- {{ change }}</div>
+              <div v-for="(change, i) in changelog.bugs.added" :key="'added-' + i"
+                class="error--text">+ {{ change }}</div>
+            </v-card-text>
+          </div>
+        </scroll-area>
+
+        <v-divider />
 
         <v-card-actions>
           <div class="flex-grow-1"></div>

@@ -1,0 +1,33 @@
+{
+    "title": "Stories and Notes",
+    "subtitle": "and other fixes, but we don't care as much about those",
+    
+    "text": [
+        "New version comes with many fixes, and, more importantly, the Note and Story systems have been added! Go forth and write 'till your heart's content!",
+        "Reminder to drop in on the  <a href=\"https://discord.gg/8bA24C9\" target=\"_blank\">Discord</a> if you need assistance, or have suggestions!"
+    ],
+
+    "changes": {
+        "additions": [
+            "Migrated to Vuetify 2.0",
+            "Added article mention list",
+            "Refactored asset management",
+            "Added notes",
+            "Show orphaned articles under the Other tab",
+            "Add universe version to database for future migration purposes",
+            "Added stories",
+            "Redesigned the home page"
+        ]
+    },
+    "bugs": {
+        "fixed": [
+            "Fix mentions showing undefined",
+            "Mentions now update when article titles change",
+            "Codex page route sanitization",
+            "Hide unused input hint to shrink the large distance between article title and content",
+            "Fixed a rare bug with orphaned article parents",
+            "Orphaned parents now nulled on load",
+            "Fixed inverted 'no mentions' check"
+        ]
+    }
+}
