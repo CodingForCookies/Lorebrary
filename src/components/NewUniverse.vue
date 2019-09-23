@@ -1,5 +1,5 @@
 <template>
-    <v-card tile>
+    <v-card tile v-if="!!universe">
         <v-text-field
             label="Universe Name"
             v-model="universe.name"

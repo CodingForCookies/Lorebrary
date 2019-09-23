@@ -33,55 +33,26 @@
             </v-btn>
         </v-snackbar>
         
-        <v-dialog
-                v-if="entry"
+        <confirm-delete
+                v-if="!!entry"
+                :name="entry.name"
                 v-model="deleting.dialog"
-                :persistent="deleting.loading"
-                width="500">
-            <v-card>
-                <v-card-title
-                        class="headline"
-                        primary-title>
-                    Delete '{{ entry.name }}'?
-                </v-card-title>
-
-                <v-card-text class="pt-3 pb-0">
-                    This action cannot be undone!
-                </v-card-text>
-
-                <v-card-actions class="px-6">
-                    <v-checkbox
-                        label="Delete Children"
-                        v-model="deleting.children" />
-
-                    <v-spacer />
-
-                    <v-btn
-                            color="error"
-                            text small
-                            :loading="deleting.loading"
-                            @click="doDelete">
-                        I'm sure
-                    </v-btn>
-
-                    <v-btn
-                            color="primary"
-                            depressed
-                            :disabled="deleting.loading"
-                            @click="deleting.dialog = false">
-                        No, please!
-                    </v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
+                @delete="doDelete">
+            <template v-slot:extra>
+                <v-checkbox
+                    label="Delete Children"
+                    v-model="deleting.children" />
+            </template>
+        </confirm-delete>
     </div>
 </template>
 
 <script>
-    import Editor from './Editor.vue'
+    import Editor from './Editor.vue';
+    import ConfirmDelete from './ConfirmDelete.vue';
 
     export default {
-        components: { Editor },
+        components: { Editor, ConfirmDelete },
         props: ['loading', 'name', 'value', 'editing', 'allowMentions'],
         data: () => ({
             entry: null,
@@ -89,7 +60,6 @@
             saving: false,
             deleting: {
                 dialog: false,
-                loading: false,
                 children: false
             },
 
@@ -117,16 +87,9 @@
             entry: {
                 deep: true,
                 handler(val, oldVal) {
-                    console.log(val);
                     if(this.ignoreChanges || !val || !oldVal) return;
 
                     this.unsaved = val.id == oldVal.id;
-                }
-            },
-
-            'deleting.dialog'(val) {
-                if(val) {
-                    this.deleting.loading = false;
                 }
             }
         },
@@ -152,8 +115,6 @@
             },
             async doDelete() {
                 this.ignoreChanges = true;
-                
-                this.deleting.loading = true;
                 
                 this.$emit('delete', {
                     retainChildren: !this.deleting.children,

@@ -363,7 +363,7 @@ export class BrowserStore extends Store {
 export default class BrowserDriver extends Driver {
     constructor(id) {
         super(id, {
-            icon: 'fas fa-sticky-note',
+            icon: 'fas fa-laptop',
             name: 'Browser Storage',
             info: {
                 description: 'Saves the universe to a your browser\'s local storage.',
