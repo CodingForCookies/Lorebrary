@@ -341,6 +341,13 @@
       }else
         // Otherwise, reset the article editor.
         this.newArticle();
+    },
+    beforeRouteUpdate (to, from, next) {
+      if(to.params.type) {
+        next();
+      }else{
+        next({ replace: true, name: 'Codex', params: Object.assign(to.params, { type: 'other' }) });
+      }
     }
   }
 </script>
