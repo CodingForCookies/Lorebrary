@@ -19,7 +19,7 @@
           </v-dialog>
           <v-divider />
 
-          <v-list>
+          <v-list class="pa-0">
             <v-list-item v-if="storyList.length == 0">
               <v-list-item-content class="text-center">
                 <v-icon large>fas fa-skull-crossbones</v-icon>
@@ -39,29 +39,11 @@
                 <v-list-item-content>
                   <div class="overline">{{ story.tags.join(' | ') }}</div>
                   <v-list-item-title class="headline mb-1">{{ story.title }}</v-list-item-title>
-                  <v-list-item-subtitle>{{ story.description || 'No description provided... :(' }}</v-list-item-subtitle>
+                  <v-list-item-subtitle v-if="story.description">{{ story.description }}</v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
             </template>
           </v-list>
-        </v-card>
-      </v-col>
-      <v-col cols="12" md="5">
-        <v-card v-for="(article, i) in news" :key="i"
-            class="mb-2"
-            hover outlined>
-          <v-list-item three-line>
-            <v-list-item-content>
-              <div class="overline mb-4">{{ article.category }}</div>
-              <v-list-item-title class="headline mb-1">{{ article.name }}</v-list-item-title>
-              <v-list-item-subtitle>Greyhound divisely hello coldly fonwderfully</v-list-item-subtitle>
-            </v-list-item-content>
-
-            <v-list-item-avatar
-              tile
-              size="80"
-              color="grey" />
-          </v-list-item>
         </v-card>
       </v-col>
     </v-row>

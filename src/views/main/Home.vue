@@ -1,11 +1,11 @@
 <template>
-  <v-dialog
-      :value="true"
-      width="500"
-      scrollable
-      persistent>
-    <select-universe />
-  </v-dialog>
+  <v-container fill-height>
+    <v-row align="center" justify="center">
+      <v-col cols="12" sm="6" md="5">
+        <select-universe />
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>

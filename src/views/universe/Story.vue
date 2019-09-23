@@ -17,7 +17,7 @@
             <v-list-item-title class="title">
                 {{ story.title }}
             </v-list-item-title>
-            <v-list-item-subtitle>{{ story.description || 'No description provided... :(' }}</v-list-item-subtitle>
+            <v-list-item-subtitle v-if="story.description">{{ story.description }}</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
 

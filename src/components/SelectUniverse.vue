@@ -1,5 +1,5 @@
 <template>
-    <v-card tile>
+    <v-card>
         <v-dialog
                 v-model="newUniverse.dialog"
                 width="500"
@@ -15,8 +15,8 @@
 
         <v-divider />
 
-        <v-card-text class="pa-0" style="max-height:300px">
-            <v-list>
+        <scroll-area style="max-height: 400px">
+            <v-list class="pa-0">
                 <v-list-item v-if="universeList.length == 0">
                     <v-list-item-content class="text-center">
                         <v-icon large>fas fa-skull-crossbones</v-icon>
@@ -31,22 +31,22 @@
                     <v-divider v-if="i > 0" :key="'divider-' + i" />
 
                     <v-list-item :key="'universe-' + i"
-                            three-line
+                            two-line
                             :to="{ name: 'Overview', params: { universeId: universe.id } }">
                         <v-list-item-content>
-                            <v-list-item-title class="headline mb-1">{{ universe.name }}</v-list-item-title>
-                            <v-list-item-subtitle>{{ universe.description || 'No description provided... :(' }}</v-list-item-subtitle>
+                            <v-list-item-title class="mb-1">{{ universe.name }}</v-list-item-title>
+                            <v-list-item-subtitle v-if="universe.description">{{ universe.description }}</v-list-item-subtitle>
                         </v-list-item-content>
 
                         <v-list-item-avatar
                                 tile
-                                size="56">
+                                size="16">
                             <v-icon>{{ $drivers[universe.driver].icon }}</v-icon>
                         </v-list-item-avatar>
                     </v-list-item>
                 </template>
             </v-list>
-        </v-card-text>
+        </scroll-area>
 
         <v-divider />
 

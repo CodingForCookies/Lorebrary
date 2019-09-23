@@ -10,6 +10,8 @@ import "./assets/vue-scrollbar.css";
 import "./assets/placeholder.css";
 import "./assets/patch.css";
 
+import "./assets/fonts.css";
+
 import VueAnalytics from 'vue-analytics';
 
 const isProd = process.env.NODE_ENV === 'production';
